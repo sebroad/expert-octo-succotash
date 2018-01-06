@@ -1,0 +1,162 @@
+{% extends "plexos.html" %}
+{% load humanize %}
+{% load multiline %}
+{% block address %}
+<table class="address">
+<tr>
+	<td>To:</td>
+	<td>{{ quote.0.recipient.fname }} {{ quote.0.recipient.lname }}</td>
+	<td>Date:</td>
+	<td>{{ quote.0.created|date }}</td>
+</tr>
+<tr>
+	<td></td>
+	<td>{{ quote.0.recipient.company }}</td>
+	<td>Valid Until:</td>
+	<td>{{ quote.0.valid|date }}</td>
+</tr>
+<tr>
+	<td></td>
+	<td>{{ quote.0.recipient.address|linebreaks }}</td>
+	<td>Quote #:</td>
+	<td>{{ quote.0.number }}</td>
+</tr>
+</table>
+{% endblock %}
+{% block preamble %}
+<p>Dear {{ quote.0.recipient.salutation }} {{ quote.0.recipient.lname }}:</p>
+<p>{{ preamble|linebreaks }}</p>
+<p>NOTE: This quote is in {{ quote.0.currency.name }}. {{ quote.0.description }}</p>
+{% endblock %}
+{% block detail %}
+<table class="detail">
+<tr>
+<td width="160px" class="detail">Section</td>
+<td class="detail">Item</td>
+<td class="detail">Qty</td>
+<td class="detail">Price</td>
+<td class="detail">Subtotal</td>
+<td class="detail">Total</td>
+{% if totals.discount > 0 %}
+<td class="detail">Savings</td>
+{% endif %}
+</tr>
+{% for item in items %}
+<tr>
+<td class="detail">{{ item.product.section }}</td>
+<td class="detail">{{ item.description }}</td>
+<td class="detail" align="right">{{ item.quantity }}</td>
+<td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.rate|intcomma }}</td>
+<td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.subtotal|intcomma }}</td>
+<td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.total|intcomma }}</td>
+{% if item.discount > 0 %}
+<td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.discount|intcomma }}</td>
+{% endif %}
+</tr>
+{% endfor %}
+
+{% if totals.software > 0 %}
+<tr>
+<td class="detail">Software Total</td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.softsub|intcomma }}</td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.software|intcomma }}</td>
+{% if totals.softdisc > 0 %}
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.softdisc|intcomma }}</td>
+{% endif %}
+</tr>
+{% endif %}
+
+{% if totals.training > 0 %}
+<tr>
+<td class="detail">Training Total</td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.training|intcomma }}</td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.training|intcomma }}</td>
+</tr>
+{% endif %}
+
+{% if totals.impl > 0 %}
+<tr>
+<td class="detail">Implementation Total</td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail" align="right"></td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.impl|intcomma }}</td>
+</tr>
+{% endif %}
+
+{% if totals.data > 0 %}
+<tr>
+<td class="detail">Dataset Total</td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.datasub|intcomma }}</td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.data|intcomma }}</td>
+{% if totals.datadisc > 0 %}
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.datadisc|intcomma }}</td>
+{% endif %}
+</tr>
+{% endif %}
+
+<tr>
+<td class="detail">Total</td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail"></td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.subtotal|intcomma }}</td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.total|intcomma }}</td>
+{% if totals.discount > 0 %}
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.discount|intcomma }}</td>
+{% endif %}
+</tr>
+</table>
+{% endblock %}
+
+{% block training %}
+{% if totals.training > 0 %}
+Client-site PLEXOS training can be arranged by either A) signing and returning this quote to indicate that 
+the pricing and conditions below for training are accepted, or B) creating a purchase order for the training
+which includes the pricing from the Training section of the quote above and the conditions of client-site
+training which are listed below, and having an authorized signer sign the purchase order.
+<ol>
+<li> Client to provide training space, including projector and adequate power plugs for the trainees and trainer.</li>
+<li> Client to provide computer hardware for training (i.e., laptops or desktop computers).</li>
+<li> Provided computer hardware must meet the minimum requirements for the use of PLEXOS.</li>
+<li> Client to provide IT support to install PLEXOS on the computer hardware for training.</li>
+<li> Energy Exemplar to provide PLEXOS software and installation instructions.</li>
+<li> Energy Exemplar to provide trainer and training materials for as many as ten trainees from Client.</li>
+<li> Energy Exemplar to provide PLEXOS licenses for each trainee for the duration of the training.</li>
+<li> Licenses will be provided on USB drives which will be returned to Energy Exemplar at the end of the training.</li>
+</ol>
+{% endif %}
+{% endblock %}
+
+{% block closing %}
+<p>
+We look forward to further conversation about PLEXOS and 
+our products and services.
+</p>
+<p>
+Please regard this pricing information as confidential.
+</p>
+<p>
+Thank you for your interest in PLEXOS,
+</p>
+<br/>
+<br/>
+<br/>
+<p>
+Steven Broad<br/>
+Energy Exemplar<br/>
+Regional Director, North America<br/>
+steven.broad@energyexemplar.com<br/>
+916 462 8658<br/>
+</p>
+{% endblock %}

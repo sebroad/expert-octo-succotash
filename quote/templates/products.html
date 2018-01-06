@@ -1,0 +1,32 @@
+{% extends "plexos.html" %}
+{% block address %}
+<h3>
+Quote for <i>{{ cust.name }}</i> of <i>{{ cust.company }}</i>
+</h3>
+{% endblock %}
+
+{% block preamble %}
+<form action="/" method="get">
+<table>
+	<tr>
+		<td>Name:</td><td><input size="50" type="text" name="name" value=""></td>
+	</tr>
+	<tr>
+		<td>Email:</td><td><input size="50" type="text" name="email" value=""></td>
+	</tr>
+	<tr>
+		<td>Company:</td><td><input size="50" type="text" name="company" value=""></td>
+		<td><input size="50" type="submit" value="Submit"></td>
+	</tr>
+</table>
+</form> 
+{% endblock %}
+
+{% block closing %}
+<h3>Some of our products</h3>
+<ul>
+{% for section in sections %}
+<li>{{ section.name }}{% if section.description != "" %} -- {{ section.description }}{% endif %}</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -99,3 +99,21 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# django related
+**/settings.py
+**/admin/**
+**/*.pyc
+*.sqlite3
+*.db
+**/migrations
+**/*.save
+**/*.save.*
+apachectl
+*.wsgi
+*.conf
+**/*.sql
+error_log
+httpd.*
+envvars
+

@@ -1,0 +1,84 @@
+{% extends "timecards.html" %}
+{% block preamble %}
+<table>
+<tr>
+<th><a href="{{ prev }}">prev</a></th>
+<th><h1>{{ title }}</h1></th>
+<th><a href="{{ next }}">next</a></th>
+</tr>
+</table>
+{% endblock %}
+{% block detail %}
+<table>
+<td valign="top" width="250px">
+<h3>Hours by <a href="/timecards/resource/{{ year }}/{{ month }}">Resource</a></h3>
+<table class="detail">
+<tr><td class="detail">Resource</td><td class="detail">Hours</td></tr>
+{% for res in resources %}
+<tr>
+	<td class="detail">
+		{{ res.timesheet__resource__full_name}}
+	</td>
+	<td class="detail">
+		{{ res.hours__sum }}
+	</td>
+<tr>
+{% endfor %}
+</table>
+</td>
+<td valign="top" width="250px">
+<h3>Hours by <a href="/timecards/project/{{ year }}/{{ month }}">Project</a></h3>
+<table class="detail">
+<tr>
+	<td class="detail">
+		Project
+	</td>
+	<td class="detail">
+		Hours
+	</td>
+</tr>
+{% for proj in projects %}
+<tr>
+	<td class="detail">
+		{{ proj.project__project_name }}
+	</td>
+	<td class="detail">
+		{{ proj.hours__sum }}
+	</td>
+<tr>
+{% endfor %}
+</table>
+</td>
+<td valign="top" width="300px">
+<h3>Grouped Daily Hours</h3>
+{% if daily|length > 0 %}
+<table class="detail">
+<tr>
+<td class="detail">Date</td>
+{% for k, v in daily.0.iteritems %}
+{% if k != 'date_of_work' %}
+<td class="detail">
+{{ k }}
+</td>
+{% endif %}
+{% endfor %}
+</tr>
+{% for day in daily %}
+<tr>
+{% for k, v in day.iteritems %}
+<td class="detail">
+{% if k == "date_of_work" %}
+{{ v|date:"M d" }}
+{% elif v == None %}
+{% else %}
+{{ v }}
+{% endif %}
+</td>
+{% endfor %}
+<tr>
+{% endfor %}
+</table>
+{% endif %}
+</td>
+</table>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "plexos.html" %}
+{% block address %}
+<div class="instructions">
+<h2>
+	Thanks for your interest in PLEXOS by Energy Exemplar!
+</h2>
+<p>
+	{% if not message %}
+	We would like to learn a bit more about your request. 
+	Please provide the information below so we can best help you.
+	{% else %}
+	{{ message }}
+	{% endif %}
+</p>
+</div>
+{% endblock %}
+
+{% block preamble %}
+<form action="" method="POST">
+{% csrf_token %}
+<table>
+	<tr>
+		<td>
+			<table>
+			{{ form }}
+			</table>
+		</td>
+		<td valign="bottom">
+			<input type="submit" value="Next"/>
+		</td>
+	</tr>
+</table>
+</form>
+{% endblock %}
+
+{% block closing %}
+{% if quotes %}
+<h3>Your recent quote requests</h3>
+<ul>
+{% for quote in quotes %}
+<li>
+	{{ quote.created|date:"D d M Y" }} {{ quote.description }}
+	{% if quote.is_approved %} 
+		<a href="{{ quote.quote_url }}" target="_">
+			{{ quote.number }}
+		</a>
+	{% elif quote.is_expired %}
+		Quote expired
+	{% else %}
+		Awaiting approval
+	{% endif %}
+</li>
+{% endfor %}
+</ul>
+
+{% endif %}
+<h3>Some of our products</h3>
+<ul>
+{% for section in sections %}
+<li>{{ section.name }}{% if section.description != "" %} -- {{ section.description }}{% endif %}</li>
+{% endfor %}
+</ul>
+{% endblock %}

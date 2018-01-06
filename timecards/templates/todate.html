@@ -1,0 +1,31 @@
+{% extends "timecards.html" %}
+{% load humanize %}
+{% block preamble %}
+<div class="links">
+{% for proj in projects %}
+<a href="/timecards/todate/{{ proj.id }}/{{ asof }}">{{ proj.project_name }}</a>
+{% endfor %}
+</div>
+{% endblock %}
+{% block detail %}
+{% for proj in hours %}
+<h1>{{ proj.project__project_name }}</h1>
+<h2>Budget: ${{ proj.project__budget__max|intcomma }}</h2>
+<h2>Monthly Hours Summary</h2> 
+<table class="detail">
+<tr><td class="detail">Period</td><td class="detail">Hours</td></tr>
+{% for month in months %}
+<tr><td class="detail">{{ month.month|date:"M Y" }}</td><td class="detail">{{ month.hours__sum }}</td></tr>
+{% endfor %}
+<tr><td class="detail">Total</td><td class="detail">{{ proj.hours__sum }}</td></tr>
+</table>
+<h2>Resource Hours Summary</h2>
+<table class="detail">
+<tr><td class="detail">Resource</td><td class="detail">Hours</td></tr>
+{% for p in people %}
+<tr><td class="detail">{{ p.timesheet__resource__full_name }}</td><td class="detail">{{ p.hours__sum }}</td></tr>
+{% endfor %}
+<tr><td class="detail">Total</td><td class="detail">{{ proj.hours__sum }}</td></tr>
+</table>
+{% endfor %}
+{% endblock %}

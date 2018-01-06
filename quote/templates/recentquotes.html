@@ -1,0 +1,5 @@
+{% block quotes %}
+{% for quote in quotes %}
+<p><a href="/quote/{{ quote.id }}">{{ quote.recipient }}</a></p>
+{% endfor %}
+{% endblock %}

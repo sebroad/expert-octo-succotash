@@ -1,0 +1,44 @@
+{% extends "timecards.html" %}
+{% block preamble %}
+<table width="700px">
+<tr>
+<th><a href="{{ prev }}">prev</a></th>
+<th><h1>{{ title }}</h1></th>
+<th><a href="{{ next }}">next</a></th>
+</tr>
+</table>
+{% endblock %}
+{% block detail %}
+{% regroup timecards by project as project_list %}
+{% for name, cards in project_list %}
+<h2>{{ name }}</h2>
+<table class="detail">
+<tr>
+	<td class="detail">Resource</td>
+	<td class="detail">Phase</td>
+	<td class="detail">Date</td>
+	<td class="detail">Hours</td>
+	<td class="detail">Comment</td>
+</tr>
+{% for card in cards %}
+<tr>
+	<td class="detail">
+		{{ card.timesheet.resource.full_name }}
+	</td>
+	<td class="detail">
+		{{ card.phase.phase_name }}
+	</td>
+	<td class="detail">
+		{{ card.date_of_work|date:"d N Y" }}
+	</td>
+	<td class="detail">
+		{{ card.hours }}
+	</td>
+	<td class="detail">
+		{{ card.comment }}
+	</td>
+<tr>
+{% endfor %}
+</table>
+{% endfor %}
+{% endblock %}

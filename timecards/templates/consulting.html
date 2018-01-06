@@ -1,0 +1,59 @@
+{% extends "timecards.html" %}
+{% block preamble %}
+<table width="700px">
+<tr>
+<th><a href="{{ prev }}">prev</a></th>
+<th><h1>{{ title }}</h1></th>
+<th><a href="{{ next }}">next</a></th>
+</tr>
+</table>
+{% endblock %}
+{% block detail %}
+{% for project in timecards %}
+<h2>{{ project.project_name }}</h2>
+{% for resource in project.resource_detail %}
+<h3>{{ resource.resource_name }}</h2>
+<table class="detail" width="800px">
+<tr>
+	<td class="detail" width="100px">Date</td>
+	<td class="detail" width="100px">Phase</td>
+	<td class="detail" width="50px">Hours</td>
+	<td class="detail" width="50px">Rate</td>
+	<td class="detail" width="70px">Total</td>
+	<td class="detail" width="300px">Comment</td>
+</tr>
+{% for item in resource.cards %}
+<tr>
+	<td class="detail">
+		{{ item.date_of_work|date:"d N Y" }}
+	</td>
+	<td class="detail">
+		{{ item.phase.phase_name }}
+	</td>
+	<td class="detail" align="right">
+		{{ item.hours }}
+	</td>
+	<td class="detail" align="right">
+		${{ item.billing_rate }}
+	</td>
+	<td class="detail" align="right">
+		${{ item.total }}
+	</td>
+	<td class="detail">
+		{{ item.comment }}
+	</td>
+<tr>
+{% endfor %}
+<tr>
+	<td class="detail">Subtotal</td>
+	<td class="detail"></td>
+	<td class="detail"></td>
+	<td class="detail"></td>
+	<td class="detail" align="right">${{ resource.total }}</td>
+	<td class="detail"></td>	
+</tr>
+</table>
+{% endfor %}
+<h2>Project Total for {{ year }}-{{ month }}: ${{ project.total }}</h2>
+{% endfor %}
+{% endblock %}

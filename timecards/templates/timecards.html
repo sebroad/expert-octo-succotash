@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>
+{{ title }}
+</title>
+<style type="text/css">
+body { background-color: AliceBlue; }
+table.detail { border: 1px solid black; font-size: smaller; }
+table.banner, table.address { border: 0px; padding: 0px; }
+td.detail { border: 1px solid black; padding: 5px; }
+div { font-family: Helvetica ; max-width: 800px; }
+div.address, div.closing, div.preamble, div.training { padding: 10px; }
+</style>
+</head>
+<body>
+<table class="banner">
+<tr>
+<td>
+<img src="/static/PLEXOS_2016_EE.png" width="300px"/>
+</td>
+<td align="right">
+<div>
+<p><b>Energy Exemplar LLC</b></p>
+<p>Offices in Sacramento, Salt Lake City, and Columbus</p>
+<p>3013 Douglas Blvd, Suite 120</p>
+<p>Roseville, CA 95661</p>
+</div>
+</td>
+</tr>
+</table>
+<div class="main">
+<div class="preamble">
+{% block preamble %}
+{% endblock %}
+</div>
+<div class="detail">
+{% block detail %}
+{% endblock %}
+</div>
+</div>
+</body>
+</html>
