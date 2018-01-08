@@ -11,7 +11,7 @@
 {% block detail %}
 {% regroup timecards by timesheet.resource.full_name as resource_list %}
 {% for name, cards in resource_list %}
-<h2>{{ name }}</h2>
+<h2><a href="/timecards/resource/{{ cards.0.timesheet.resource.username.username }}">{{ name }}</a></h2>
 <table class="detail">
 <tr>
 	<td class="detail">Project</td>
