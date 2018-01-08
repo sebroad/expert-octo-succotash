@@ -11,7 +11,13 @@
 {% block detail %}
 {% regroup timecards by project as project_list %}
 {% for name, cards in project_list %}
-<h2>{{ name }} (<a href="/timecards/todate/{{ cards.0.project.id }}/{{ year }}-{{ month }}-00">to date</a>)</h2>
+<h2>
+{{ name }} 
+(<a href="/timecards/todate/{{ cards.0.project.id }}/{{ year }}-{{ month }}-00">to date</a>)
+{% if cards.0.project.billing_method.is_billed %}
+(<a href="/timecards/billable/{{ name }}/{{ year }}/{{ month }}">consulting report</a>
+{% endif %}
+</h2>
 <table class="detail">
 <tr>
 	<td class="detail">Resource</td>

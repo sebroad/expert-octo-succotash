@@ -11,14 +11,22 @@
 {% endblock %}
 {% block detail %}
 {% for project in timecards %}
-<h2>{{ project.project_name }}</h2>
+<h2><a href="/timecards/project/{{ project.project_name }}">{{ project.project_name }}</a></h2>
 <p>{{ project.resource_detail.0.cards.0.project.recipient.contact }}</p>
 <p>{{ project.resource_detail.0.cards.0.project.recipient.company }}</p>
 <p>{{ project.resource_detail.0.cards.0.project.recipient.address|linebreaks }}</p>
-<p>{{ project.resource_detail.0.cards.0.project.recipient.email }}</p>
+<p>
+<a href="mailto:{{ project.resource_detail.0.cards.0.project.recipient.email }}">
+{{ project.resource_detail.0.cards.0.project.recipient.email }}
+</a>
+</p>
 <p>PO: {{ project.resource_detail.0.cards.0.project.recipient.po_number }}</p>
 {% for resource in project.resource_detail %}
-<h3>{{ resource.resource_name }}</h2>
+<h3>
+	<a href="/timecards/resource/{{ resource.cards.0.timesheet.resource.username.username }}/{{ year }}/{{ month }}">
+		{{ resource.resource_name }}
+	</a>
+</h3>
 <table class="detail" width="800px">
 <tr>
 	<td class="detail" width="100px">Date</td>
