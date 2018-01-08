@@ -155,7 +155,7 @@ def summary(request, year=None, month=None):
 	prev = re.sub('/[0-9]{4}/[0-9]{2}', '/{}/{:02d}'.format(pv.year, pv.month), request.path)
 
 	c = dict()
-	c['resources'] = cards.values('timesheet__resource__full_name') \
+	c['resources'] = cards.values('timesheet__resource__full_name', 'timesheet__resource__username__username') \
 				.annotate(Sum('hours')) \
 				.order_by('timesheet__resource__full_name')
 	c['projects'] = cards.values('project__project_name') \

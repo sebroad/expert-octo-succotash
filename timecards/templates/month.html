@@ -17,7 +17,7 @@
 {% for res in resources %}
 <tr>
 	<td class="detail">
-		{{ res.timesheet__resource__full_name}}
+		<a href="/timecards/resource/{{ res.timesheet__resource__username__username }}/{{ year }}/{{ month }}">{{ res.timesheet__resource__full_name }}</a>
 	</td>
 	<td class="detail">
 		{{ res.hours__sum }}
@@ -40,7 +40,7 @@
 {% for proj in projects %}
 <tr>
 	<td class="detail">
-		{{ proj.project__project_name }}
+		<a href="/timecards/project/{{ proj.project__project_name }}/{{ year }}/{{ month }}">{{ proj.project__project_name }}</a>
 	</td>
 	<td class="detail">
 		{{ proj.hours__sum }}
