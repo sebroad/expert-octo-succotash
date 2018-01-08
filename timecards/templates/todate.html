@@ -3,9 +3,11 @@
 {% block preamble %}
 	<div class="links">
 		{% for proj in projects %}
-			<a href="/timecards/todate/{{ proj.id }}/{{ asof }}">
-				{{ proj.project_name }}
-			</a>
+			<span class="detail">
+				<a href="/timecards/todate/{{ proj.id }}/{{ asof }}">
+					{{ proj.project_name }}
+				</a>
+			</span>
 		{% endfor %}
 	</div>
 {% endblock %}
