@@ -47,7 +47,7 @@ def todatesummary(cards, projid):
 	total_cost = 0.0
 	
 	for row in results:
-		rate = float(rates[0][row['name']]) if row['name'] in rates[0] else 0.0
+		rate = float(rates[0][row['name']]) if len(rates) > 0 and row['name'] in rates[0] else 0.0
 		row['cost'] = rate * float(row['total_hours'])
 		total_hours += float(row['total_hours'])
 		total_cost += row['cost']
