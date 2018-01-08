@@ -11,13 +11,11 @@
 {% block detail %}
 {% for project in timecards %}
 <h2>{{ project.project_name }}</h2>
-<p>
-	{{ project.resource_detail.0.cards.0.project.recipient.contact }}<br/>
-	{{ project.resource_detail.0.cards.0.project.recipient.company }}<br/>
-	{{ project.resource_detail.0.cards.0.project.recipient.address }}<br/>
-	{{ project.resource_detail.0.cards.0.project.recipient.email }}<br/>
-	PO: {{ project.resource_detail.0.cards.0.project.recipient.po_number }}	
-</p>
+<p>{{ project.resource_detail.0.cards.0.project.recipient.contact }}</p>
+<p>{{ project.resource_detail.0.cards.0.project.recipient.company }}</p>
+<p>{{ project.resource_detail.0.cards.0.project.recipient.address|linebreaks }}</p>
+<p>{{ project.resource_detail.0.cards.0.project.recipient.email }}</p>
+<p>PO: {{ project.resource_detail.0.cards.0.project.recipient.po_number }}</p>
 {% for resource in project.resource_detail %}
 <h3>{{ resource.resource_name }}</h2>
 <table class="detail" width="800px">
