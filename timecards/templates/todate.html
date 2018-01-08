@@ -10,7 +10,7 @@
 	</div>
 {% endblock %}
 {% block detail %}
-<h2>{{ results.0.proj }} as of {{ asof }}</h2>
+<h2><a href="/timecards/project/{{ results.0.proj }}/{{ year }}/{{ month }}">{{ results.0.proj }}</a> as of {{ asof }}</h2>
 <h3>Budget: ${{ budget|floatformat:2|intcomma }}, Remaining: ${{ remaining|floatformat:2|intcomma }}</h3>
 <table class="detail">
 	<tr>

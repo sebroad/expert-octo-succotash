@@ -11,7 +11,7 @@
 {% block detail %}
 {% regroup timecards by project as project_list %}
 {% for name, cards in project_list %}
-<h2>{{ name }}</h2>
+<h2>{{ name }} (<a href="/timecards/todate/{{ cards.0.project.id }}/{{ year }}-{{ month }}-00">to date</a>)</h2>
 <table class="detail">
 <tr>
 	<td class="detail">Resource</td>

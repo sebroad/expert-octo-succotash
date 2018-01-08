@@ -10,6 +10,7 @@ from django.db.models import Sum, Max, F
 from django.db.models.functions import TruncMonth, Substr
 from django_pivot.pivot import pivot
 import re
+import calendar
 
 # Create your views here.
 @login_required
@@ -20,14 +21,19 @@ def todate(request, projid = 0, year = '', month = '', day = ''):
 		to = datetime(int(year), 1, 1)
 	elif day == '':
 		to = datetime(int(year), int(month), 1)
+	elif day == '00':
+		week_day, last_day = calendar.monthrange(int(year), int(month))
+		to = datetime(int(year), int(month), last_day)
 	else:
 		to = datetime(int(year), int(month), int(day))
+	to = min(datetime.today(), to)
 	projects = Project.objects.all()
 	cards = TimeCard.objects.filter(project__id=projid, date_of_work__lte=to)
 	results, hours, cost = todatesummary(cards, projid)
 	budget = float(projects.filter(id=projid).aggregate(Max('budget'))['budget__max'])
 	c = dict(results=results, projects=projects, hours=hours, cost=cost, \
-			 budget=budget, remaining=budget-cost, asof='{:%Y-%m-%d}'.format(to))
+			 year=year, month = month, budget=budget, remaining=budget-cost, \
+			 asof='{:%Y-%m-%d}'.format(to))
 	t = loader.get_template("todate.html")
 	return HttpResponse(t.render(c))
 
