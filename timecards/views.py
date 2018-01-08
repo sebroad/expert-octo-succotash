@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from .models import *
 from django.db.models import Sum, Max
-from django.db.models.functions import TruncMonth
+from django.db.models.functions import TruncMonth, Substr
 from django_pivot.pivot import pivot
 import re
 
@@ -24,17 +24,46 @@ def todate(request, projid = 0, year = '', month = '', day = ''):
 		to = datetime(int(year), int(month), int(day))
 	projects = Project.objects.all()
 	cards = TimeCard.objects.filter(project__id=projid, date_of_work__lte=to)
-	hours, budget, months, people = todatesummary(cards)
-	c = dict({'projects': projects, 'hours': hours, 'budget': budget, 'months': months, 'people': people, 'asof': '{:%Y-%m-%d}'.format(to)})
+	results = todatesummary(cards, projid)
+	c = dict({'results': results, 'asof': '{:%Y-%m-%d}'.format(to)})
 	t = loader.get_template("todate.html")
 	return HttpResponse(t.render(c))
 
-def todatesummary(cards):
-	months = cards.annotate(month=TruncMonth('date_of_work')).values('month').annotate(Sum('hours'))
-	people = cards.values('timesheet__resource__full_name').annotate(Sum('hours'))
-	hours = cards.values('project__project_name').annotate(Sum('hours'), Max('project__budget'))
-	budget = 0.0
-	return hours, budget, months, people
+def todatesummary(cards, projid):
+	
+	# query
+	res = cards.annotate( \
+			month=TruncMonth('date_of_work'), \
+			name=Substr('timesheet__resource__full_name', 1), \
+			proj=Substr('project__project_name', 1)) \
+		.values('month', 'name', 'proj') \
+		.annotate(total_hours=Sum('hours'))
+		
+	# pivot table
+	results = dict(hours=pivot(res, 'name', 'month', 'hours'), cost=[])
+	
+	# total rows
+	hours_total_row = dict(name='Total')
+	cost_total_row = dict(name='Total')
+	
+	# loop through the rows to create a cost table
+	for row in results['hours']:
+		rates = ProjectResource.objects.filter(project__id=projid, resource__full_name=row['name'])
+		rate = 0.0 if len(rates) == 0 else rates[0].billing_rate
+		total_hours = 0.0
+		cost_row = dict()
+		for k, v in row.iteritems():
+			if k == 'name':
+				cost_row[k] = v
+			elif v == None:
+				cost_row[k] = v
+			else:
+				total_hours += float(v)
+				cost_row[k] = rate * float(v)
+		row['total'] = total_hours
+		cost_row['total'] = total_hours * rate
+		
+	return results
 
 @login_required
 def timesheet(request, sheetname):
