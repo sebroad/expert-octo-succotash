@@ -33,7 +33,7 @@ def todate(request, projid = 0, year = '', month = '', day = ''):
 	budget = float(projects.filter(id=projid).aggregate(Max('budget'))['budget__max'])
 	c = dict(results=results, projects=projects, hours=hours, cost=cost, \
 			 year=year, month = month, budget=budget, remaining=budget-cost, \
-			 asof='{:%Y-%m-%d}'.format(to))
+			 asof='{:%Y-%m-%d}'.format(to), title='Project to Date {:%Y-%m-%d}'.format(to))
 	t = loader.get_template("todate.html")
 	return HttpResponse(t.render(c))
 
