@@ -23,13 +23,15 @@
 {% for card in cards %}
 <tr>
 	<td class="detail">
-		{{ card.project.project_name }}
+		<a href="/timecards/project/{{ card.project.project_name }}/{{ year }}/{{ month }}">
+			{{ card.project.project_name }}
+		</a>
 	</td>
 	<td class="detail">
 		{{ card.phase.phase_name }}
 	</td>
 	<td class="detail">
-		{{ card.date_of_work|date:"d N Y" }}
+		{{ card.date_of_work|date:"Y-m-d" }}
 	</td>
 	<td class="detail">
 		{{ card.hours }}

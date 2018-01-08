@@ -10,6 +10,8 @@ table.banner, table.address { border: 0px; padding: 0px; }
 td.detail { border: 1px solid black; padding: 5px; }
 div { font-family: Helvetica ; max-width: 800px; }
 div.address, div.closing, div.preamble, div.training { padding: 10px; }
+div.detail { padding-bottom: 24px; }
+div.footer { padding-top: 24px; font-size: larger; }
 </style>
 </head>
 <body>
@@ -36,6 +38,13 @@ div.address, div.closing, div.preamble, div.training { padding: 10px; }
 <div class="detail">
 {% block detail %}
 {% endblock %}
+</div>
+<hr/>
+<div class="footer">
+<a href="/timecards/{{ year }}/{{ month }}">Summary</a>
+<a href="/timecards/project/{{ year }}/{{ month }}">Projects</a>
+<a href="/timecards/resource/{{ year }}/{{ month }}">Resources</a>
+<a href="/timecards/billable/{{ year }}/{{ month }}">Consulting</a>
 </div>
 </div>
 </body>

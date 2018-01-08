@@ -23,7 +23,9 @@
 {% for card in cards %}
 <tr>
 	<td class="detail">
-		{{ card.timesheet.resource.full_name }}
+		<a href="/timecards/resource/{{ card.timesheet.resource.username.username}}/{{ year }}/{{ month }}">
+			{{ card.timesheet.resource.full_name }}
+		</a>
 	</td>
 	<td class="detail">
 		{{ card.phase.phase_name }}

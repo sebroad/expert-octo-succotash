@@ -77,7 +77,7 @@ def resourcetime(request, resname='', year=None, month=None):
 									date_of_work__year=year, date_of_work__month=month)
 	cards = cards.order_by('timesheet__resource__username__last_name', 'date_of_work')
 	title = '{} ({}-{})'.format('Resources' if resname == '' else resname, year, month)
-	c = dict({'timecards': cards, 'title': title, 'next': next, 'prev': prev})
+	c = dict({'timecards': cards, 'title': title, 'next': next, 'prev': prev, 'year': year, 'month': month})
 	t = loader.get_template("user.html")
 	return HttpResponse(t.render(c))
 
@@ -93,9 +93,14 @@ def projecttime(request, projname='', year=None, month=None):
 	next = re.sub('/[0-9]{4}/[0-9]{2}', '/{}/{:02d}'.format(nx.year, nx.month), request.path)
 	prev = re.sub('/[0-9]{4}/[0-9]{2}', '/{}/{:02d}'.format(pv.year, pv.month), request.path)
 
-	cards = TimeCard.objects.filter(project__project_name__icontains=projname, date_of_work__year=year, date_of_work__month=month)
+	cards = TimeCard.objects.filter(project__project_name__icontains=projname, \
+		date_of_work__year=year, date_of_work__month=month)
+	
 	cards = cards.order_by('project__project_name', 'date_of_work')
-	c = dict({'timecards': cards, 'title': '{} ({}-{})'.format('All projects' if len(projname) == 0 else projname, year, month), 'next': next, 'prev': prev})
+	c = dict({'timecards': cards, 'year': year, 'month': month, \
+		'title': '{} ({}-{})'.format('All projects' if len(projname) == 0 else projname, year, month), \
+		'next': next, 'prev': prev})
+	
 	t = loader.get_template("project.html")
 	return HttpResponse(t.render(c))	
 	
