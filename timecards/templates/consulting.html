@@ -1,4 +1,5 @@
 {% extends "timecards.html" %}
+{% load humanize %}
 {% block preamble %}
 <table width="700px">
 <tr>
@@ -42,7 +43,7 @@
 		${{ item.billing_rate }}
 	</td>
 	<td class="detail" align="right">
-		${{ item.total }}
+		${{ item.total|intcomma }}
 	</td>
 	<td class="detail">
 		{{ item.comment }}
@@ -54,11 +55,11 @@
 	<td class="detail"></td>
 	<td class="detail"></td>
 	<td class="detail"></td>
-	<td class="detail" align="right">${{ resource.total }}</td>
+	<td class="detail" align="right">${{ resource.total|intcomma }}</td>
 	<td class="detail"></td>	
 </tr>
 </table>
 {% endfor %}
-<h2>Project Total for {{ year }}-{{ month }}: ${{ project.total }}</h2>
+<h2>Project Total for {{ year }}-{{ month }}: ${{ project.total|intcomma }}</h2>
 {% endfor %}
 {% endblock %}

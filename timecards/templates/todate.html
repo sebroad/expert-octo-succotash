@@ -10,5 +10,51 @@
 	</div>
 {% endblock %}
 {% block detail %}
-{{ results }}
+<h2>{{ results.0.proj }} as of {{ asof }}</h2>
+<h3>Budget: ${{ budget|floatformat:2|intcomma }}, Remaining: ${{ remaining|floatformat:2|intcomma }}</h3>
+<table class="detail">
+	<tr>
+		<td class="detail">
+			Month
+		</td>
+		<td class="detail">
+			Resource
+		</td>
+		<td class="detail">
+			Hours
+		</td>
+		<td class="detail">
+			Cost
+		</td>
+	</tr>
+	{% for row in results %}
+		<tr>
+			<td class="detail">
+				{% ifchanged row.month %}{{ row.month }}{% endifchanged %}
+			</td>
+			<td class="detail">
+				{{ row.name }}
+			</td>
+			<td class="detail" align="right">
+				{{ row.total_hours|floatformat:2|intcomma }}
+			</td>
+			<td class="detail" align="right">
+				${{ row.cost|floatformat:2|intcomma }}
+			</td>
+		</tr>
+	{% endfor %}
+	<tr>
+		<td class="detail">
+			Total
+		</td>
+		<td class="detail">
+		</td>
+		<td class="detail" align="right">
+			{{ hours|floatformat:2|intcomma }}
+		</td>
+		<td class="detail" align="right">
+			${{ cost|floatformat:2|intcomma }}
+		</td>
+	</tr>
+</table>
 {% endblock %}
