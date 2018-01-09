@@ -15,6 +15,7 @@ class TimeCardInline(admin.TabularInline):
 class TimeSheetAdmin(admin.ModelAdmin):
 	inlines = [ TimeCardInline, ]
 	list_display = ('name', 'resource', 'show_link',)
+	list_filter = ('resource', )
 	def show_link(self, obj):
 		return format_html('<a target="_" href="/timecards/ts/{name}">{name}</a>', name=obj.name)
 	show_link.short_description = "TimeSheet Link"
