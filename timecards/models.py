@@ -65,6 +65,8 @@ class TimeSheet(models.Model):
 	created = models.DateTimeField(auto_now=True)
 	name = models.CharField(max_length=100)
 	resource = models.ForeignKey(Resource)
+	def __str__(self):
+		return self.name
 	
 class TimeCard(models.Model):
 	created = models.DateTimeField(auto_now=True)
