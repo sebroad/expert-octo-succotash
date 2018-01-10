@@ -22,6 +22,7 @@ class QuoteAdmin(admin.ModelAdmin):
 
 class ProductAdmin(admin.ModelAdmin):
 	list_display = ('get_section_name', 'name', )
+	list_filter = ('is_software','is_electric','is_gas','is_water','is_implementation','is_solver',)
 	ordering = ('section__order', 'order_in_section',)
 	def get_section_name(self, obj):
 		return str(obj.section)

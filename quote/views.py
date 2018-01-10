@@ -113,13 +113,20 @@ def get_preamble(quote, totals):
 		x += "please contact us via the contact information below. "
 
 	if totals['training'] > 0:
-		x += '\n\nA quote for on-site PLEXOS training is included. Training '
-		x += 'sessions admit at most ten trainees from your company. This '
-		x += 'quote provides estimates for travel expenses. PLEXOS training '
-		x += 'is also offered at our regional offices at intervals. This option '
-		x += 'is often less expensive for small groups of trainees. Please '
-		x += 'enquire if interested. '
-		
+		if totals['onsitetraining'] > 0:
+			x += '\n\nA quote for on-site PLEXOS training is included. Training '
+			x += 'sessions admit at most ten trainees from your company. This '
+			x += 'quote provides estimates for travel expenses. PLEXOS training '
+			x += 'is also offered at our regional offices at intervals. This option '
+			x += 'is often less expensive for small groups of trainees. Please '
+			x += 'inquire if interested. '
+		else:
+			x += '\n\nA quote for PLEXOS training is included. This quote does not '
+			x += 'include your travel costs to attend the training which will be '
+			x += 'scehduled at a date and location determined by Energy Exemplar '
+			x += '(typically several times a year at our offices). Energy Exemplar '
+			x += 'can also provide customized training at your site. Please inquire '
+			x += 'if interested. '
 	if totals['impl'] > 0:
 		x += "\n\nA quote for PLEXOS implementation services is shown below. PLEXOS Implementation services are illustrative only. Implementation services require further agreement on the Scope of Work. "
 		
@@ -150,11 +157,13 @@ def get_totals(items):
 	totals['connect'] = 0
 	totals['usb'] = 0
 	totals['training'] = 0
+	totals['onsitetraining'] = 0
 	for item in items:
 		totals['total'] += item.total()
 		totals['subtotal'] += item.subtotal()
 		totals['discount'] += item.discount()
 		totals['training'] += item.total() if item.product.is_training else 0
+		totals['onsitetraining'] += item.total() if item.product.is_training and item.product.is_onsite else 0
 
 	for item in items.filter(product__is_software=True):
 		totals['software'] += item.total()

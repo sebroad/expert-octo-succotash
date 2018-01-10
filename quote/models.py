@@ -38,6 +38,7 @@ class Product(models.Model):
 	note = models.CharField(max_length=200, blank=True)
 	is_software = models.BooleanField(default=True)
 	is_training = models.BooleanField(default=False)
+	is_onsite = models.BooleanField(default=False)
 	is_implementation = models.BooleanField(default=False)
 	is_data = models.BooleanField(default=False)
 	is_engine = models.BooleanField(default=False)
