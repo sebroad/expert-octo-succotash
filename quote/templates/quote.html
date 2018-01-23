@@ -42,7 +42,7 @@
 </tr>
 {% for item in items %}
 <tr>
-<td class="detail">{{ item.product.section }}</td>
+<td class="detail">{% ifchanged item.product.section %}{{ item.product.section }}{% endifchanged %}</td>
 <td class="detail">{{ item.description }}</td>
 <td class="detail" align="right">{{ item.quantity }}</td>
 <td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.rate|intcomma }}</td>
