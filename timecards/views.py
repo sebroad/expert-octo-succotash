@@ -81,10 +81,13 @@ def resourcetime(request, resname='', year=None, month=None):
 
 	cards = TimeCard.objects.filter(timesheet__resource__username__username__icontains=resname, \
 									date_of_work__year=year, date_of_work__month=month)
-	pivot_tbl = pivot(cards, 'date_of_work', 'timesheet__resource__username__last_name', 'hours')
-	cards = cards.order_by('timesheet__resource__username__last_name', 'date_of_work')
+	pivot_tbl = pivot(cards, 'date_of_work', 'timesheet__resource__username__username', 'hours')
+	cards = cards.order_by('timesheet__resource__username__username', 'date_of_work')
 	title = '{} ({}-{})'.format('Resources' if resname == '' else resname, year, month)
-	c = dict({'timecards': cards, 'title': title, 'next': next, 'prev': prev, 'year': year, 'month': month, 'pivot': pivot_tbl})
+	if resname == '':
+		c = dict({'title': title, 'next': next, 'prev': prev, 'year': year, 'month': month, 'pivot': pivot_tbl})
+	else:
+		c = dict({'timecards': cards, 'title': title, 'next': next, 'prev': prev, 'year': year, 'month': month})
 	t = loader.get_template("user.html")
 	return HttpResponse(t.render(c))
 

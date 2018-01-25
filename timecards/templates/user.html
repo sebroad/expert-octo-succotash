@@ -1,4 +1,5 @@
 {% extends "timecards.html" %}
+{% load keyvalue %}
 {% block preamble %}
 <table width="700px">
 <tr>
@@ -9,32 +10,36 @@
 </table>
 {% endblock %}
 {% block detail %}
+{% if pivot %}
 <table class="detail">
 <tr>
 <td class="detail">Date</td>
 {% for k, v in pivot.0.iteritems %}
 {% if k != 'date_of_work' %}
 <td class="detail">
+<a href="/timecards/resource/{{ k }}/{{ year }}/{{ month }}">
 {{ k|slice:"0:5" }}
+</a>
 </td>
 {% endif %}
 {% endfor %}
 </tr>
 {% for day in pivot %}
 <tr>
-{% for k, v in day.iteritems %}
-<td class="detail">
+<td class="detail">{{ day.date_of_work|date:"m/d" }}</td>
+{% for k in pivot.0 %}
 {% if k == "date_of_work" %}
-{{ v|date:"m/d" }}
-{% elif v == None %}
 {% else %}
-{{ v }}
-{% endif %}
+<td class="detail">
+{{ day|keyvalue:k }}
 </td>
+{% endif %}
 {% endfor %}
 <tr>
 {% endfor %}
 </table>
+{% endif %}
+
 {% regroup timecards by timesheet.resource.full_name as resource_list %}
 {% for name, cards in resource_list %}
 <h2><a href="/timecards/resource/{{ cards.0.timesheet.resource.username.username }}">{{ name }}</a></h2>
