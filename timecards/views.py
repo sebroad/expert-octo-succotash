@@ -106,11 +106,17 @@ def projecttime(request, projname='', year=None, month=None):
 	cards = TimeCard.objects.filter(project__project_name__icontains=projname, \
 		date_of_work__year=year, date_of_work__month=month)
 	
+	pivot_tbl = pivot(cards, 'date_of_work', 'project__project_name', 'hours')
 	cards = cards.order_by('project__project_name', 'date_of_work')
-	c = dict({'timecards': cards, 'year': year, 'month': month, \
-		'title': '{} ({}-{})'.format('All projects' if len(projname) == 0 else projname, year, month), \
-		'next': next, 'prev': prev})
-	
+	if projname == '':
+		c = dict({'pivot': pivot_tbl, 'year': year, 'month': month, \
+			'title': 'All projects ({}-{})'.format(year, month), \
+			'next': next, 'prev': prev})
+	else:
+		c = dict({'timecards': cards, 'year': year, 'month': month, \
+			'title': '{} ({}-{})'.format(projname, year, month), \
+			'next': next, 'prev': prev})
+		
 	t = loader.get_template("project.html")
 	return HttpResponse(t.render(c))	
 	

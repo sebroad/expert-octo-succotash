@@ -1,4 +1,5 @@
 {% extends "timecards.html" %}
+{% load keyvalue %}
 {% block preamble %}
 <table width="700px">
 <tr>
@@ -9,6 +10,37 @@
 </table>
 {% endblock %}
 {% block detail %}
+
+{% if pivot %}
+<table class="detail">
+<tr>
+<td class="detail">Date</td>
+{% for k, v in pivot.0.iteritems %}
+{% if k != 'date_of_work' %}
+<td class="detail">
+<a href="/timecards/project/{{ k }}/{{ year }}/{{ month }}" title="{{ k }}">
+{{ k|slice:"0:5" }}
+</a>
+</td>
+{% endif %}
+{% endfor %}
+</tr>
+{% for day in pivot %}
+<tr>
+<td class="detail">{{ day.date_of_work|date:"m/d" }}</td>
+{% for k in pivot.0 %}
+{% if k == "date_of_work" %}
+{% else %}
+<td class="detail">
+{{ day|keyvalue:k }}
+</td>
+{% endif %}
+{% endfor %}
+<tr>
+{% endfor %}
+</table>
+{% endif %}
+
 {% regroup timecards by project as project_list %}
 {% for name, cards in project_list %}
 <h2>
