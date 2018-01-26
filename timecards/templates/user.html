@@ -17,7 +17,11 @@
 {% for k, v in pivot.0.iteritems %}
 {% if k != 'date_of_work' %}
 <td class="detail">
+{% if year %}
 <a href="/timecards/resource/{{ k }}/{{ year }}/{{ month }}">
+{% else %}
+<a href="/timecards/resource/{{ k }}">
+{% endif %}
 {{ k|slice:"0:5" }}
 </a>
 </td>

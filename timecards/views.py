@@ -62,8 +62,9 @@ def todatesummary(cards, projid):
 
 @login_required
 def timesheet(request, sheetname):
-	cards = TimeCard.objects.filter(timesheet__name=sheetname).order_by('date_of_work', 'project__project_name')
-	c = dict({'timecards': cards, 'title': sheetname})
+	cards = TimeCard.objects.filter(timesheet__name=sheetname)
+	pivot_tbl = pivot(cards, 'date_of_work','timesheet__resource__username__username','hours')
+	c = dict({'pivot': pivot_tbl, 'timecards': cards.order_by('date_of_work', 'project__project_name'), 'title': sheetname})
 	t = loader.get_template("user.html")
 	return HttpResponse(t.render(c))	
 
@@ -84,10 +85,9 @@ def resourcetime(request, resname='', year=None, month=None):
 	pivot_tbl = pivot(cards, 'date_of_work', 'timesheet__resource__username__username', 'hours').order_by('date_of_work')
 	cards = cards.order_by('timesheet__resource__username__username', 'date_of_work')
 	title = '{} ({}-{})'.format('Resources' if resname == '' else resname, year, month)
-	if resname == '':
-		c = dict({'title': title, 'next': next, 'prev': prev, 'year': year, 'month': month, 'pivot': pivot_tbl})
-	else:
-		c = dict({'timecards': cards, 'title': title, 'next': next, 'prev': prev, 'year': year, 'month': month})
+	c = dict({'title': title, 'next': next, 'prev': prev, 'year': year, 'month': month, 'pivot': pivot_tbl})
+	if resname != '':
+		c['timecards'] = cards
 	t = loader.get_template("user.html")
 	return HttpResponse(t.render(c))
 
