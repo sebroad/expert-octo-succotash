@@ -81,7 +81,7 @@ def resourcetime(request, resname='', year=None, month=None):
 
 	cards = TimeCard.objects.filter(timesheet__resource__username__username__icontains=resname, \
 									date_of_work__year=year, date_of_work__month=month)
-	pivot_tbl = pivot(cards, 'date_of_work', 'timesheet__resource__username__username', 'hours')
+	pivot_tbl = pivot(cards, 'date_of_work', 'timesheet__resource__username__username', 'hours').order_by('date_of_work')
 	cards = cards.order_by('timesheet__resource__username__username', 'date_of_work')
 	title = '{} ({}-{})'.format('Resources' if resname == '' else resname, year, month)
 	if resname == '':
@@ -106,7 +106,7 @@ def projecttime(request, projname='', year=None, month=None):
 	cards = TimeCard.objects.filter(project__project_name__icontains=projname, \
 		date_of_work__year=year, date_of_work__month=month)
 	
-	pivot_tbl = pivot(cards, 'date_of_work', 'project__project_name', 'hours')
+	pivot_tbl = pivot(cards, 'date_of_work', 'project__project_name', 'hours').order_by('date_of_work')
 	cards = cards.order_by('project__project_name', 'date_of_work')
 	if projname == '':
 		c = dict({'pivot': pivot_tbl, 'year': year, 'month': month, \
