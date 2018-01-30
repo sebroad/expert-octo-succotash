@@ -1,5 +1,6 @@
 {% extends "plexos.html" %}
 {% load humanize %}
+{% load addstr %}
 {% block address %}
 <table class="address">
 <tr>
@@ -33,8 +34,14 @@
 <td width="160px" class="detail">Section</td>
 <td class="detail">Item</td>
 <td class="detail">Qty</td>
+{% if quote.0.num_years > 1 %}
+	{% for year in quote.0.get_multi_year_range %}
+		<td class="detail" align="right">{{ "Year " }}{{ year }}</td>
+	{% endfor %}
+{% else %}
 <td class="detail">Price</td>
 <td class="detail">Subtotal</td>
+{% endif %}
 <td class="detail">Total</td>
 {% if totals.discount > 0 %}
 <td class="detail">Savings</td>
@@ -45,8 +52,14 @@
 <td class="detail">{% ifchanged item.product.section %}{{ item.product.section }}{% endifchanged %}</td>
 <td class="detail">{{ item.description }}</td>
 <td class="detail" align="right">{{ item.quantity }}</td>
+{% if quote.0.num_years > 1 %}
+	{% for year, year_subtotal in item.get_multi_year_subtotal.items %}
+		<td class="detail" align="right">{{ item.quote.currency.symbol }}{{ year_subtotal|intcomma }}</td>
+	{% endfor %}
+{% else %}
 <td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.rate|intcomma }}</td>
 <td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.subtotal|intcomma }}</td>
+{% endif %}
 <td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.total|intcomma }}</td>
 {% if item.discount > 0 %}
 <td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.discount|intcomma }}</td>
@@ -59,8 +72,16 @@
 <td class="detail">Software Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
+{% if quote.0.num_years > 1 %}
+	{% for year in quote.0.get_multi_year_range %}
+		{% with "software_"|addstr:year as input %}
+		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input}}</td>
+		{% endwith %}
+	{% endfor %}
+{% else %}
 <td class="detail"></td>
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.softsub|intcomma }}</td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.subtotal|intcomma }}</td>
+{% endif %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.software|intcomma }}</td>
 {% if totals.softdisc > 0 %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.softdisc|intcomma }}</td>
@@ -73,8 +94,16 @@
 <td class="detail">Training Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
+{% if quote.0.num_years > 1 %}
+	{% for year in quote.0.get_multi_year_range %}
+		{% with "training_"|addstr:year as input %}
+		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
+		{% endwith %}
+	{% endfor %}
+{% else %}
 <td class="detail"></td>
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.training|intcomma }}</td>
+{% endif %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.training|intcomma }}</td>
 </tr>
 {% endif %}
@@ -84,8 +113,16 @@
 <td class="detail">Implementation Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
+{% if quote.0.num_years > 1 %}
+	{% for year in quote.0.get_multi_year_range %}
+		{% with "impl_"|addstr:year as input %}
+		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
+		{% endwith %}
+	{% endfor %}
+{% else %}
 <td class="detail"></td>
-<td class="detail" align="right"></td>
+<td class="detail"></td>
+{% endif %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.impl|intcomma }}</td>
 </tr>
 {% endif %}
@@ -95,8 +132,16 @@
 <td class="detail">Dataset Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
+{% if quote.0.num_years > 1 %}
+	{% for year in quote.0.get_multi_year_range %}
+		{% with "datasub_"|addstr:year as input %}
+		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
+		{% endwith %}
+	{% endfor %}
+{% else %}
 <td class="detail"></td>
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.datasub|intcomma }}</td>
+{% endif %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.data|intcomma }}</td>
 {% if totals.datadisc > 0 %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.datadisc|intcomma }}</td>
@@ -108,8 +153,16 @@
 <td class="detail">Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
+{% if quote.0.num_years > 1 %}
+	{% for year in quote.0.get_multi_year_range %}
+		{% with "totals_"|addstr:year as input %}
+		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
+		{% endwith %}
+	{% endfor %}
+{% else %}
 <td class="detail"></td>
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.subtotal|intcomma }}</td>
+{% endif %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.total|intcomma }}</td>
 {% if totals.discount > 0 %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.discount|intcomma }}</td>
