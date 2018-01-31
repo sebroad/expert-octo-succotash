@@ -15,6 +15,19 @@ import calendar
 # Create your views here.
 @login_required
 def todate(request, projid = 0, year = '', month = '', day = ''):
+	'''
+	A view to render the hours spent on a project to date.
+	
+	request --> HttpRequest inbound from the web-server
+	projid --> the id integer of the project for which to render the data
+	year, month, day --> strings representing the year, month and day
+		to which to total the project hours
+		*** If all three are missing, assume today
+		*** If month/day is missing, assume beginning on the 1st of the month
+		*** if Month is 00, the end of the present month
+	'''
+	
+	# compute the correct "to" date
 	if year == '':
 		to = datetime.today()
 	elif month == '':
@@ -22,15 +35,28 @@ def todate(request, projid = 0, year = '', month = '', day = ''):
 	elif day == '':
 		to = datetime(int(year), int(month), 1)
 	elif day == '00':
+		# need to determine the end of the month
 		week_day, last_day = calendar.monthrange(int(year), int(month))
 		to = datetime(int(year), int(month), last_day)
 	else:
 		to = datetime(int(year), int(month), int(day))
+		
+	# don't go past today
 	to = min(datetime.today(), to)
+	
+	# query the list of projects
 	projects = Project.objects.all()
+	
+	# query the relevant hours
 	cards = TimeCard.objects.filter(project__id=projid, date_of_work__lte=to)
+	
+	# summary the hours
 	results, hours, cost = todatesummary(cards, projid)
+	
+	# obtain the project budget
 	budget = float(projects.filter(id=projid).aggregate(Max('budget'))['budget__max'])
+	
+	# provide data and render into the template
 	c = dict(results=results, projects=projects, hours=hours, cost=cost, \
 			 year=year, month = month, budget=budget, remaining=budget-cost, \
 			 asof='{:%Y-%m-%d}'.format(to), title='Project to Date {:%Y-%m-%d}'.format(to))
