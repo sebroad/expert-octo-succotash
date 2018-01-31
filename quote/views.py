@@ -158,6 +158,19 @@ def get_totals(items):
 	totals['usb'] = 0
 	totals['training'] = 0
 	totals['onsitetraining'] = 0
+	for item in items.filter(quote__num_years__gt=1):
+		for year in item.quote.get_multi_year_range(): 
+			totals['totals_' + str(year) ] = 0
+			if item.product.is_software == 1: 
+				totals['software_'+ str(year)] = 0
+			if item.product.is_data == 1: 
+				totals['datasub_'+ str(year)] = 0
+			if item.product.is_implementation == 1: 
+				totals['impl_'+ str(year)] = 0
+			if item.product.is_training: 
+				totals['training_'+ str(year)] = 0
+
+
 	for item in items:
 		totals['total'] += item.total()
 		totals['subtotal'] += item.subtotal()
@@ -187,4 +200,17 @@ def get_totals(items):
 		totals['datasub'] += item.subtotal()
 		totals['datadisc'] += item.discount()
 		
+	for item in items.filter(quote__num_years__gt=1):
+		for year, year_subtotal in item.get_multi_year_subtotal().iteritems(): 
+			totals['totals_' + str(year) ] += year_subtotal
+			if item.product.is_software: 
+				totals['software_'+ str(year)] += year_subtotal
+			if item.product.is_data:  
+				totals['datasub_'+ str(year)] += year_subtotal
+			if item.product.is_implementation: 
+				totals['impl_'+ str(year)] += year_subtotal
+			if item.product.is_training: 
+				totals['training_'+ str(year)] += year_subtotal
+
+
 	return totals

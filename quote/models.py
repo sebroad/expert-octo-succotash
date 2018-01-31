@@ -77,6 +77,8 @@ class Quote(models.Model):
 	is_approved = models.BooleanField(default=False)
 	def is_expired(self):
 		return datetime.now() > self.created.replace(tzinfo=None) + timedelta(30)
+	def get_multi_year_range(self):
+		return range(1, self.num_years+1)
 	def quote_url(self):
 		return '/quote/{}'.format(id)
 	def number(self):
@@ -104,6 +106,11 @@ class LineItem(models.Model):
 				'({} Paid)'.format(self.already) if self.already > 0 else '')
 		else:
 			return '{}'.format(self.product.name)
+	def get_multi_year_subtotal(self):
+		multi_year_subtotal = dict()
+		for year in self.quote.get_multi_year_range(): 
+			multi_year_subtotal[year] = int(round(self.get_single_year_subtotal()* ((1+ float(self.quote.esc_percent)/100)**(year-1)), 0))
+		return multi_year_subtotal
 
 	def rate(self):
 		sub = float(self.override) if self.is_override else float(self.product.price)
@@ -112,8 +119,16 @@ class LineItem(models.Model):
 		sub *= float(self.quote.currency.conversion)
 		sub *= (1+float(self.quote.esc_percent)/100)**self.quote.future_year
 		return int(round(sub, 0))
-		
-	def subtotal(self):
+	
+	def subtotal(self): 
+		if self.quote.num_years == 1: 
+			return self.get_single_year_subtotal()
+		subtotal = 0
+		for year, year_subtotal in self.get_multi_year_subtotal().iteritems(): 
+			subtotal += year_subtotal
+		return subtotal
+
+	def get_single_year_subtotal(self):
 		return int(self.rate()*(self.quantity-self.already))
 
 	def discount(self):
