@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from datetime import datetime, date, time, timedelta
+from django.contrib.auth.models import User
 import uuid
 
 # Create your models here.
@@ -63,6 +64,17 @@ class Recipient(models.Model):
 			return '{} {} {} ({})'.format(self.salutation, self.fname, self.lname, self.company)
 		else:
 			return self.email
+
+
+class Signature(models.Model):
+	first_name = models.CharField(max_length=50, default="")
+	last_name = models.CharField(max_length=50,default="")
+	location = models.CharField(max_length=50,default="3031 Douglas blvd., Roseville CA 95661")
+	title = models.CharField(max_length=50, blank=True)
+	email = models.EmailField(default="")
+	phone_number = models.CharField(max_length=50, blank=True)
+	def __unicode__(self):
+		return 'Signature: ' + self.first_name + ' ' + self.last_name
 	
 class Quote(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -74,6 +86,7 @@ class Quote(models.Model):
 	currency = models.ForeignKey(Currency, default = 1)
 	description = models.TextField(blank=True)
 	pdf_file = models.FileField(blank=True)
+	signature = models.ForeignKey(Signature, null=True)
 	is_approved = models.BooleanField(default=False)
 	def is_expired(self):
 		return datetime.now() > self.created.replace(tzinfo=None) + timedelta(30)
@@ -139,5 +152,5 @@ class LineItem(models.Model):
 		return self.percent_discount > 0
 	def __str__(self):
 		return '{} -- {}'.format(self.quote, self.description())
-		
-	
+
+

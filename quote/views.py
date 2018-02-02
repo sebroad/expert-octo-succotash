@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-
+from django.contrib.auth.models import User
 from django.shortcuts import render, loader
 from django.http import HttpResponse
 from .models import *
@@ -48,9 +48,11 @@ def quote(request, quotenum):
 	quote = Quote.objects.filter(id=quotenum)
 	items = LineItem.objects.filter(quote__id=quotenum).order_by('product__section__order', 'product__order_in_section')
 	totals = get_totals(items)
+	signature = Signature.objects.filter(email__iexact=request.user.email)
 	c = dict({'quote': quote, 'items': items, \
 			  'totals': totals, \
-			  'preamble': get_preamble(quote[0],totals) \
+			  'preamble': get_preamble(quote[0],totals), \
+			  'signature': signature,\
 			  })
 	t = loader.get_template('quote.html')
 	return HttpResponse(t.render(c))
@@ -132,7 +134,10 @@ def get_preamble(quote, totals):
 		
 	if totals['discount'] > 0:
 		x += "\n\nThe quote identifies one or more areas of savings that have been applied to your pricing request. "
-		
+
+	if quote.num_years > 1: 
+		x+= "\n\nThis quote is valid over a period of {} after the initial start date".format(quote.num_years)
+
 	return x
 	
 def get_totals(items):	
@@ -161,11 +166,11 @@ def get_totals(items):
 	for item in items.filter(quote__num_years__gt=1):
 		for year in item.quote.get_multi_year_range(): 
 			totals['totals_' + str(year) ] = 0
-			if item.product.is_software == 1: 
+			if item.product.is_software: 
 				totals['software_'+ str(year)] = 0
-			if item.product.is_data == 1: 
+			if item.product.is_data: 
 				totals['datasub_'+ str(year)] = 0
-			if item.product.is_implementation == 1: 
+			if item.product.is_implementation: 
 				totals['impl_'+ str(year)] = 0
 			if item.product.is_training: 
 				totals['training_'+ str(year)] = 0

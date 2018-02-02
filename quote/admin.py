@@ -32,11 +32,16 @@ class SectionAdmin(admin.ModelAdmin):
 	inlines = [ProductInline, ]
 	ordering = ('order',)
 
+class SignatureAdmin(admin.ModelAdmin):
+	model = Signature
+
+
 # Rename the admin site
 admin.site.site_header = "PLEXOS by Energy Exemplar"
 
 # Register your models here.
 admin.site.register(Currency)
+admin.site.register(Signature, SignatureAdmin)
 admin.site.register(TermIncrement)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Product, ProductAdmin)
