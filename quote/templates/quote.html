@@ -204,11 +204,17 @@ Thank you for your interest in PLEXOS,
 <br/>
 <br/>
 <br/>
+
 <p>
-Steven Broad<br/>
-Energy Exemplar<br/>
-Regional Director, North America<br/>
-steven.broad@energyexemplar.com<br/>
-916 462 8658<br/>
+	{% if signature.0.first_name %}
+		{{ signature.0.first_name }}{{" "}}{{ signature.0.last_name}}<br/>
+		{{ signature.0.email }} <br/>
+		Energy Exemplar<br/>
+		{{ signature.0.title }} <br/>
+		{{ signature.0.location }} <br/>
+		{{ signature.0.phone_number }} <br/>
+	{% else %}
+		Invalid Signature 
+	{% endif %}
 </p>
 {% endblock %}
