@@ -80,7 +80,7 @@
 	{% endfor %}
 {% else %}
 <td class="detail"></td>
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.subtotal|intcomma }}</td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.softsub|intcomma }}</td>
 {% endif %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.software|intcomma }}</td>
 {% if totals.softdisc > 0 %}
