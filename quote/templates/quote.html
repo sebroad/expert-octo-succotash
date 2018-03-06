@@ -75,7 +75,7 @@
 {% if quote.0.num_years > 1 %}
 	{% for year in quote.0.get_multi_year_range %}
 		{% with "software_"|addstr:year as input %}
-		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input}}</td>
+		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma }}</td>
 		{% endwith %}
 	{% endfor %}
 {% else %}
