@@ -136,7 +136,7 @@ def get_preamble(quote, totals):
 		x += "\n\nThe quote identifies one or more areas of savings that have been applied to your pricing request. "
 
 	if quote.num_years > 1: 
-		x+= "\n\nThis quote is valid over a period of {} after the initial start date".format(quote.num_years)
+		x+= "\n\nThis quote provides licensing for a period of {} years from the commencement of the license agreement.".format(quote.num_years)
 
 	return x
 	

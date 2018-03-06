@@ -119,10 +119,17 @@ class LineItem(models.Model):
 				'({} Paid)'.format(self.already) if self.already > 0 else '')
 		else:
 			return '{}'.format(self.product.name)
+			
 	def get_multi_year_subtotal(self):
 		multi_year_subtotal = dict()
 		for year in self.quote.get_multi_year_range(): 
-			multi_year_subtotal[year] = int(round(self.get_single_year_subtotal()* ((1+ float(self.quote.esc_percent)/100)**(year-1)), 0))
+			if item.product.is_software:
+				multi_year_subtotal[year] = int(round(self.get_single_year_subtotal()* ((1+ float(self.quote.esc_percent)/100)**(year-1)), 0))
+			elif year == 1:
+				multi_year_subtotal[year] = self.get_single_year_subtotal()
+			else:
+				multi_year_subtotal[year] = 0
+				
 		return multi_year_subtotal
 
 	def rate(self):
