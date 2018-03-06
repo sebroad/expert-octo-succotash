@@ -123,7 +123,7 @@ class LineItem(models.Model):
 	def get_multi_year_subtotal(self):
 		multi_year_subtotal = dict()
 		for year in self.quote.get_multi_year_range(): 
-			if item.product.is_software:
+			if self.product.is_software:
 				multi_year_subtotal[year] = int(round(self.get_single_year_subtotal()* ((1+ float(self.quote.esc_percent)/100)**(year-1)), 0))
 			elif year == 1:
 				multi_year_subtotal[year] = self.get_single_year_subtotal()
