@@ -84,7 +84,7 @@ class TimeCard(models.Model):
 			return 0.0
 	def total(self):
 		if self.project.billing_method.is_billed:
-			return float(self.billing_rate()) * self.hours
+			return self.billing_rate() * float(self.hours)
 		else:
 			return 0.0
 	def __str__(self):
