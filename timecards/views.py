@@ -161,6 +161,7 @@ def billabletime(request, projname='', year=None, month=None):
 	cards = TimeCard.objects.filter( \
 			project__project_name__icontains=projname, \
 			project__billing_method__is_billed=True, \
+			project__billing_method__is_monthly=True, \
 			date_of_work__year=year, \
 			date_of_work__month=month)
 	
