@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.shortcuts import render, loader
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import *
 import re
@@ -44,6 +45,7 @@ def home(request):
 			c = dict({'sections': sections, 'form': form, 'message': message, 'quotes': quotes})
 			return HttpResponse(t.render(c,request=request))
 	
+@login_required
 def quote(request, quotenum):
 	quote = Quote.objects.filter(id=quotenum)
 	items = LineItem.objects.filter(quote__id=quotenum).order_by('product__section__order', 'product__order_in_section')
