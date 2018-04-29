@@ -69,7 +69,7 @@ class Recipient(models.Model):
 class Signature(models.Model):
 	first_name = models.CharField(max_length=50, default="")
 	last_name = models.CharField(max_length=50,default="")
-	location = models.CharField(max_length=50,default="3031 Douglas blvd., Roseville CA 95661")
+	location = models.CharField(max_length=50,default="3013 Douglas Blvd, Suite 120\nRoseville CA 95661")
 	title = models.CharField(max_length=50, blank=True)
 	email = models.EmailField(default="")
 	phone_number = models.CharField(max_length=50, blank=True)
