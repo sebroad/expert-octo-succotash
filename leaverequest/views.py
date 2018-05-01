@@ -18,3 +18,5 @@ def requestid(request, requestid):
 	t = loader.get_template("leaverequest.html")
 	return HttpResponse(t.render(c))	
 	
+def summary(request, year, month):
+	pass
