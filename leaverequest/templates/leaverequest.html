@@ -1,0 +1,91 @@
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'>
+<title>
+{{ title }}
+</title>
+<style type="text/css">
+body { background-color: AliceBlue; }
+table.banner { width: 800px; }
+table.detail { padding: 0px; border: 1px solid black; width: 800px; }
+table.sched { border: 1px solid black; width: 800px; }
+td { border: 1px solid black; padding: 12px; }
+div { font-family: Helvetica ; width: 800px; }
+div.address, div.closing, div.preamble, div.training { padding: 10px; width: 700px; }
+span.sig { font: 24px 'Arizonia', Helvetica, sans-serif;
+  color: #2b2b2b;
+  text-shadow: 4px 4px 0px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+<table class="banner">
+<tr>
+<td>
+<img src="/static/PLEXOS_2016_EE.png" width="300px"/>
+</td>
+<td align="right">
+<table>
+<tr style="font-style=bold;font-color=red;">Controlled Document</tr>
+<tr></tr>
+<tr></tr>
+<tr></tr>
+<tr></tr>
+</table>
+</td>
+</tr>
+</table>
+<div>
+<center>
+<h1><u>LEAVE APPLICATION (US)</u></h1>
+<p>
+West Coast<input type="checkbox" {% if request.office == "SAC" %}checked{% endif %}/>
+East Coast<input type="checkbox" {% if request.office == "COL" %}checked{% endif %}/>
+</p>
+</center>
+<p>
+<table class="detail">
+<tr><td colspan="2">Name:{{ request.name.full_name }}</td></tr>
+<tr><td colspan="2">Note:- Please refer to the leave policies and your contract to be sure 
+you are entitled to the leave you are applying for and that you will have enough
+leave available, taking into account existing applications.</td></tr>
+<tr><td colspan="2">
+	Apply for Leave <input type="checkbox" {% if request.amended %}{% else %}checked{% endif %}/>
+	or Amend Leave <input type="checkbox" {% if request.amended %}checked{% else %}{% endif %}/>
+</td></tr>
+<tr><td colspan = "2">
+Leave being applied for/amended:<br/>
+	Vacation/PTO <input type="checkbox" {% if request.leave_type == "PTO" %}checked{% endif %}/>
+	Floating Holiday <input type="checkbox" {% if request.leave_type == "FLT" %}checked{% endif %}/>
+	Sick <input type="checkbox" {% if request.leave_type == "SIC" %}checked{% endif %}/>
+</td></tr>
+<tr><td colspan="2">
+Total of Leave Days: <u>&nbsp;&nbsp;{{ request.get_num_leave_days }}&nbsp;&nbsp;</u> 
+Total of Leave Hours (if not full days): <u>&nbsp;&nbsp;{{ request.get_num_leave_hours }}&nbsp;&nbsp;</u></td></tr>
+<tr><td colspan="2">
+Complete dates of leave below:<br/>
+<table class="sched">
+<tr><td>Monday</td><td>Tuesday</td><td>Wednesday</td><td>Thursday</td><td>Friday</td><td>Saturday</td><td>Sunday</td></tr>
+{% for day in request.get_leave_schedule_table %}
+{% if day.0.weekday == 0 %}<tr>{% endif %}
+<td>
+	{% if day.0 %}{{ day.0|date:"m/d" }}{% endif %}
+	{% if day.1 %}{% if day.1.0 %}<br/><i>{{ day.1 }}</i>{% endif %}{% endif %}
+</td>
+{% if day.weekday == 6 %}</tr>{% endif %}
+{% endfor %}
+</table>
+</td></tr>
+<tr>
+<td>Date of first day of leave: {{ request.get_first_leave_day }}</td>
+<td>Date of last day of leave: {{ request.get_last_leave_day }}</td>
+</tr>
+<tr><td>Applicant Signature: <span class="sig">{{ request.name.full_name }}</span></td>
+<td>Date: {{ request.application_date }}</td></tr>
+<tr><td colspan="2">The undersigned manager/supervisor approves the leave </td></tr>
+<tr><td>Signature: <span class="sig">{{ approval.approver.full_name }}</span></td><td></td></tr>
+<tr><td></td><td></td></tr>
+</table>
+</p>
+</div>
+</body>
+</html>

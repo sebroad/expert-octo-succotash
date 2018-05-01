@@ -10,14 +10,15 @@ class LeaveDayInline(admin.TabularInline):
 	model = LeaveDay
 
 class LeaveRequestAdmin(admin.ModelAdmin):
-	list_display = ['name', 'office', 'application_date', 'show_leave_req_url',]
+	list_display = ['show_leave_id', 'office', 'application_date', 'show_leave_req_url',]
 	inlines = [LeaveDayInline, ]
-	formfield_overrides = { models.TextField: {'widget': forms.TextInput}}
 	ordering = ('-application_date',)
 	def show_leave_req_url(self, obj):
-		print obj.id
 		return format_html('<a target="_" href="/leavereq/{uuid}">{uuid}</a>', uuid=obj.id)
 	show_leave_req_url.short_description = "Printable Leave Request"
+	def show_leave_id(self, obj):
+		return str(obj)
+	show_leave_id.short_description = "Leave Request"
 
 
 # Rename the admin site

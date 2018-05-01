@@ -9,9 +9,30 @@ import django.utils.timezone
 # Create your models here.
 class Resource(models.Model):
 	username = models.OneToOneField(User)
-	full_name = models.CharField(max_length=100)
+	phone = models.CharField(max_length=15)
+	cell_phone = models.CharField(max_length=15)
+	SandPoint = 'SP'
+	SaltLakeCity = 'SLC'
+	Portland = 'PDX'
+	Sacramento = 'SAC'
+	Columbus = 'COL'
+	OFFICE_CHOICES = ( \
+		(SandPoint, 'Sand Point'), \
+		(SaltLakeCity, 'Salt Lake City'), \
+		(Portland, 'Portland'), \
+		(Sacramento, 'Sacramento'), \
+		(Columbus, 'Columbus'), \
+		)
+	office = models.CharField( \
+		max_length=3, \
+		choices=OFFICE_CHOICES, \
+		default=Sacramento, \
+		)
+
+	def full_name(self):
+		return '{} {}'.format(self.username.first_name, self.username.last_name)
 	def __str__(self):
-		return self.full_name
+		return self.full_name()
 	
 class Recipient(models.Model):
 	contact = models.CharField(max_length=100) 
