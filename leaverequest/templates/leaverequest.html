@@ -48,7 +48,7 @@ East Coast<input type="checkbox" {% if request.office == "COL" %}checked{% endif
 </center>
 <p>
 <table class="detail">
-<tr><td colspan="2">Name:{{ request.name.full_name }}</td></tr>
+<tr><td colspan="2">Name:{{ request.name.get_full_name }}</td></tr>
 <tr><td colspan="2">Note:- Please refer to the leave policies and your contract to be sure 
 you are entitled to the leave you are applying for and that you will have enough
 leave available, taking into account existing applications.</td></tr>
@@ -83,12 +83,12 @@ Complete dates of leave below:<br/>
 <td>Date of first day of leave: {{ request.get_first_leave_day }}</td>
 <td>Date of last day of leave: {{ request.get_last_leave_day }}</td>
 </tr>
-<tr><td>Applicant Signature: <span class="sig">{{ request.name.full_name }}</span></td>
+<tr><td>Applicant Signature: <span class="sig">{{ request.name.get_full_name }}</span></td>
 <td>Date: {{ request.application_date }}</td></tr>
 <tr><td colspan="2">The undersigned manager/supervisor approves the leave </td></tr>
-<tr><td>Signature: <span class="sig">{{ approval.approver.full_name }}</span></td>
+<tr><td>Signature: <span class="sig">{{ approval.approver.get_full_name }}</span></td>
 <td>Date: {{ approval.approval_timestamp }}</td></tr>
-<tr><td>Print Name: {{ approval.approver.full_name }}</td><td>Phone Number: {{ approval.approver.phone }}</td></tr>
+<tr><td>Print Name: {{ approval.approver.get_full_name }}</td><td>Phone Number: {{ approval.approver.phone }}</td></tr>
 </table>
 </p>
 <p style="color=blue;"><center>energyexemplar.com</center></p>

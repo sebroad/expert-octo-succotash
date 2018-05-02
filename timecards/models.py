@@ -29,10 +29,11 @@ class Resource(models.Model):
 		default=Sacramento, \
 		)
 
-	def full_name(self):
+	full_name = models.CharField(max_length=40,default='')
+	def get_full_name(self):
 		return '{} {}'.format(self.username.first_name, self.username.last_name)
 	def __str__(self):
-		return self.full_name()
+		return self.get_full_name()
 	
 class Recipient(models.Model):
 	contact = models.CharField(max_length=100) 

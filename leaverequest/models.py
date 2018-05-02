@@ -71,7 +71,7 @@ class LeaveRequest(models.Model):
 		return len(LeaveApproval.objects.filter(request__id=self.id, approval_timestamp__gte=self.application_date)) > 0
 		
 	def __str__(self):
-		return '{} ({:%m/%d/%y}-{:%m/%d/%y})'.format(self.name.full_name(), self.get_first_leave_day(), self.get_last_leave_day())
+		return '{} ({:%m/%d/%y}-{:%m/%d/%y})'.format(self.name.get_full_name(), self.get_first_leave_day(), self.get_last_leave_day())
 		
 	
 	
