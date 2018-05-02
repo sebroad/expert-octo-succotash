@@ -29,7 +29,7 @@ class LeaveRequest(models.Model):
 		default=Sacramento, \
 		)
 	LEAVE_TYPE = [('PTO', 'Vacation/PTO'),('FLT', 'Floating Holiday'),('SIC','Sick'),]
-	name = models.OneToOneField(Resource)
+	name = models.ForeignKey(Resource)
 	amended = models.BooleanField(default=False)
 	
 	leave_type = models.CharField(max_length=3, choices=LEAVE_TYPE, default='PTO')
@@ -67,6 +67,9 @@ class LeaveRequest(models.Model):
 		#print mylist
 		return mylist
 		
+	def is_approved(self):
+		return len(LeaveApproval.objects.filter(request__id=self.id, approval_timestamp__gte=self.application_date)) > 0
+		
 	def __str__(self):
 		return '{} ({:%m/%d/%y}-{:%m/%d/%y})'.format(self.name.full_name(), self.get_first_leave_day(), self.get_last_leave_day())
 		
@@ -79,7 +82,9 @@ class LeaveDay(models.Model):
 	request = models.ForeignKey('LeaveRequest',on_delete=models.CASCADE)
 	
 class LeaveApproval(models.Model):
-	approver = models.OneToOneField(Resource)
+	approver = models.ForeignKey(Resource)
 	approval_timestamp = models.DateTimeField(auto_now=True)
-	request = models.OneToOneField(LeaveRequest)
+	request = models.ForeignKey('LeaveRequest',on_delete=models.CASCADE)
+	def __str__(self):
+		return str(self.request)
 	

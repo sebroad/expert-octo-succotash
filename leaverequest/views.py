@@ -9,11 +9,14 @@ from .models import *
 # Create your views here.
 def requestid(request, requestid):
 	leavereq = LeaveRequest.objects.filter(id=requestid)
+	approval = LeaveApproval.objects.filter(request__id=requestid).order_by('-approval_timestamp')
 	
 	if len(leavereq) == 0:
 		c = dict({'title': 'Request not found'})
+	elif len(approval) == 0:
+		c = dict({'request': leavereq[0]})
 	else:
-		c = dict({'request': leavereq[0], 'title': 'Leave Request for ' + leavereq[0].name.username.first_name})
+		c = dict({'request': leavereq[0], 'approval': approval[0]})
 
 	t = loader.get_template("leaverequest.html")
 	return HttpResponse(t.render(c))	

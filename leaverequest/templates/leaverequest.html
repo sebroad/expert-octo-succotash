@@ -2,7 +2,7 @@
 <head>
 <link href='http://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'>
 <title>
-{{ title }}
+{{ request }}
 </title>
 <style type="text/css">
 body { background-color: AliceBlue; }
@@ -14,6 +14,7 @@ td.a1 { padding: 1px; border-width: 1px 0px 1px 1px; }
 td.a2 { padding: 1px; border-width: 1px 1px 1px 0px; }
 td.b { padding: 5px; border: 0px; }
 div { font-family: Helvetica ; width: 800px; }
+div.alert { color: Red; width: 600px; font-weight: bold; }
 div.address, div.closing, div.preamble, div.training { padding: 10px; width: 700px; }
 span.sig { font: 24px 'Arizonia', Helvetica, sans-serif;
   color: #2b2b2b;
@@ -24,11 +25,11 @@ span.sig { font: 24px 'Arizonia', Helvetica, sans-serif;
 <table class="banner">
 <tr>
 <td class="b">
-<img src="/static/PLEXOS_2016_EE.png" width="300px"/>
+<img src="/static/EnergyExemplar.png"/>
 </td>
 <td class="b" align="right">
+<div class="alert">Controlled Document</div>
 <table>
-<tr style="font-style=bold;font-color=red;">Controlled Document</tr>
 <tr><td class="a1">Document No:</td><td class="a2">HR115</td></tr>
 <tr><td class="a1">Version:</td><td class="a2">3</td></tr>
 <tr><td class="a1">Issue Date:</td><td class="a2">14 July 2016</td></tr>
