@@ -21,5 +21,24 @@ def requestid(request, requestid):
 	t = loader.get_template("leaverequest.html")
 	return HttpResponse(t.render(c))	
 	
-def summary(request, year, month):
+def summary(request, year = None, month = None):
+	if year is None:
+		url = '{}/{}/'.format(request.path, datetime.today().year)
+		return HttpResponseRedirect(url.replace('//','/'))
+	if month is None:
+		'''
+		Create an annual report for current year
+		Pivot requested and approved leaves by month, resource
+		'''
+		reqs = LeaveDay.objects.filter(date_of_leave__year=int(year))
+		return HttpResponse(reqs)
+		
+	else:
+		'''
+		Create a monthly report for selected month
+		Pivot requested and approved leaves by day, resource
+		'''
+		reqs = LeaveDay.objects.filter(date_of_leave__year=int(year), date_of_leave__month=int(month))
+		return HttpResponse(reqs)
+		
 	pass

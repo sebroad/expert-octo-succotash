@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>
+{{ title }}
+</title>
+<style type="text/css">
+body { background-color: AliceBlue; }
+table.detail { border: 1px solid black; font-size: smaller; }
+table.banner, table.address { border: 0px; padding: 0px; }
+td.detail { border: 1px solid black; padding: 5px; }
+div { font-family: Helvetica ; max-width: 800px; }
+div.address, div.closing, div.preamble, div.training { padding: 10px; }
+div.detail { padding-bottom: 24px; }
+div.footer { padding-top: 24px; font-size: larger; }
+span.detail { padding-right: 12px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<table class="banner">
+<tr>
+<td>
+<img src="/static/EnergyExemplar.png" width="300px"/>
+</td>
+<td align="right">
+<div>
+<p><b>Energy Exemplar LLC</b></p>
+<p>Offices in Sacramento, Salt Lake City, and Columbus</p>
+<p>3013 Douglas Blvd, Suite 120</p>
+<p>Roseville, CA 95661</p>
+</div>
+</td>
+</tr>
+</table>
+<div class="main">
+<div class="preamble">
+{% block preamble %}
+{% endblock %}
+</div>
+<div class="detail">
+{% block detail %}
+{% endblock %}
+</div>
+<hr/>
+<div class="footer">
+<a href="/timecards/{{ year }}/{{ month }}">Summary</a>
+<a href="/timecards/project/{{ year }}/{{ month }}">Projects</a>
+<a href="/timecards/resource/{{ year }}/{{ month }}">Resources</a>
+<a href="/timecards/billable/{{ year }}/{{ month }}">Consulting</a>
+<a href="/admin/timecards">Timesheet Entry</a>
+<a href="/leavereq/{{ year }}">Leave Totals</a>
+</div>
+</div>
+</body>
+</html>
