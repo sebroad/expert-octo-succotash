@@ -1,13 +1,28 @@
 {% extends "leavereport.html" %}
 {% load humanize %}
+{% load keyvalue %}
 {% block preamble %}
 <h2>Rolling Year Leave Report for {{ resource }}</h2>
-<h3>{{ start }} -- {{ end }}</h3>
+<h3>{{ start|date }} -- {{ end|date }}</h3>
 {% endblock %}
 {% block detail %}
 <h4>Summary</h4>
 <table>
-	
+<table class="detail">
+<tr>
+{% for k, v in pivot_tbl.0.iteritems %}
+<td class="detail">{{ k }}</td>
+{% endfor %}
+</tr>
+{% for item in pivot_tbl %}
+<tr>
+{% for k in pivot_tbl.0 %}
+<td class="detail">
+{{ item|keyvalue:k }}
+</td>
+{% endfor %}
+<tr>
+{% endfor %}
 </table>
 <h4>Detail</h4>
 <table class="detail">

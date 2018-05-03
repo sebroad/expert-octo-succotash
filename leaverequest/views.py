@@ -33,6 +33,9 @@ def summary(request, year = None, month = None):
 	if year is None:
 		url = '{}/{}/'.format(request.path, datetime.today().year)
 		return HttpResponseRedirect(url.replace('//','/'))
+		
+	c = dict(year=year,month=month)
+	
 	if month is None:
 		'''
 		Create an annual report for current year
@@ -52,19 +55,24 @@ def summary(request, year = None, month = None):
 		pivot_tbl = pivot(reqs, 'day', 'request__name__username__username', 'hours').order_by('day')
 		
 		t = loader.get_template('daily.html')
+		c['prev'] = datetime(int(year),int(month),1)-timedelta(1)
+		c['next'] = datetime(int(year),int(month),1)+timedelta(31)
 		
-	c = dict(pivot_tbl=pivot_tbl,year=year,month=month)
+	c['pivot_tbl'] = pivot_tbl
 	
 	return HttpResponse(t.render(c))
-pass
 
+	
 @login_required
 def resource(request, resource=''):
 	start = datetime.today() - timedelta(182)
 	end = start + timedelta(365)
 	
 	leavedays = LeaveDay.objects.filter(request__name__username__username__startswith=resource, \
-										date_of_leave__gte=start, date_of_leave__lt=end)
-	c = dict({'title': 'Report for ' + resource,'leavedays': leavedays,'resource':resource,'start':start,'end':end})
+										date_of_leave__gte=start, date_of_leave__lt=end) \
+										.annotate(Month=TruncMonth('date_of_leave'))
+	pivot_tbl = pivot(leavedays, 'Month', 'request__leave_type', 'hours').order_by('Month')
+	c = dict({'title': 'Report for ' + resource,'leavedays': leavedays, \
+			  'resource':resource,'start':start,'end':end,'pivot_tbl': pivot_tbl})
 	t = loader.get_template("resource.html")
 	return HttpResponse(t.render(c))	
