@@ -44,6 +44,6 @@ urlpatterns = [
 	url(r'^leavereq/(?P<requestid>[0-9a-f\-]{36})', leaverequest.views.requestid),
 	url(r'^leavereq/(?P<year>[0-9]{4})/(?P<month>[0-9]{2})', leaverequest.views.summary),
 	url(r'^leavereq/(?P<year>[0-9]{4})', leaverequest.views.summary),
-	url(r'^leavereq/(?P<username>.*)$', leaverequest.views.resource),
+	url(r'^leavereq/(?P<resource>.*)$', leaverequest.views.resource),
 	url(r'^leavereq/{0,1}$', leaverequest.views.summary),
 ]

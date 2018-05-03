@@ -1,5 +1,6 @@
-{% extends "timecards.html" %}
+{% extends "leavereport.html" %}
 {% load humanize %}
+{% load keyvalue %}
 {% block preamble %}
 <h1>{{ title }}</h1>
 {% endblock %}
@@ -7,34 +8,29 @@
 <h2>Leave for {{ year }}</h2>
 <table class="detail">
 <tr>
-<td class="detail">Date</td>
+<td class="detail">Month</td>
 {% for k, v in pivot_tbl.0.iteritems %}
 {% if k != 'month' %}
 <td class="detail">
-{% if year %}
-<a href="/timecards/resource/{{ k }}/{{ year }}/{{ month }}">
-{% else %}
-<a href="/timecards/resource/{{ k }}">
-{% endif %}
+<a href="/leavereq/{{ k }}">
 {{ k|slice:"0:5" }}
 </a>
 </td>
 {% endif %}
 {% endfor %}
 </tr>
-{% for day in pivot %}
+{% for month in pivot_tbl %}
 <tr>
-<td class="detail">{{ day.date_of_work|date:"m/d" }}</td>
-{% for k in pivot.0 %}
-{% if k == "date_of_work" %}
+<td class="detail"><a href="/leavereq/{{ month.month|date:'Y/m' }}">{{ month.month|date:"M" }}</a></td>
+{% for k in pivot_tbl.0 %}
+{% if k == "month" %}
 {% else %}
 <td class="detail">
-{{ day|keyvalue:k }}
+{{ month|keyvalue:k }}
 </td>
 {% endif %}
 {% endfor %}
 <tr>
 {% endfor %}
 </table>
-{{ pivot_tbl }}
 {% endblock %}

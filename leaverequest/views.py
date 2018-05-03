@@ -27,34 +27,6 @@ def requestid(request, requestid):
 	t = loader.get_template("leaverequest.html")
 	return HttpResponse(t.render(c))	
 	
-@login_required
-def summary_test(request, year=None, month=None):
-	if year == None or month == None:
-		url = '{}/{}/{:02d}'.format(request.path, datetime.today().year, datetime.today().month)
-		return HttpResponseRedirect(url.replace('//','/'))
-	
-	dt = date(int(year), int(month), 1)
-	nx = dt + timedelta(31)
-	pv = dt - timedelta(1)
-	next = re.sub('/[0-9]{4}/[0-9]{2}', '/{}/{:02d}'.format(nx.year, nx.month), request.path)
-	prev = re.sub('/[0-9]{4}/[0-9]{2}', '/{}/{:02d}'.format(pv.year, pv.month), request.path)
-
-	cards = TimeCard.objects.filter(project__project_name__icontains=projname, \
-		date_of_work__year=year, date_of_work__month=month)
-	
-	pivot_tbl = pivot(cards, 'date_of_work', 'project__project_name', 'hours').order_by('date_of_work')
-	cards = cards.order_by('project__project_name', 'date_of_work')
-	if projname == '':
-		c = dict({'pivot': pivot_tbl, 'year': year, 'month': month, \
-			'title': 'All projects ({}-{})'.format(year, month), \
-			'next': next, 'prev': prev})
-	else:
-		c = dict({'timecards': cards, 'year': year, 'month': month, \
-			'title': '{} ({}-{})'.format(projname, year, month), \
-			'next': next, 'prev': prev})
-		
-	t = loader.get_template("project.html")
-	return HttpResponse(t.render(c))	
 
 @login_required
 def summary(request, year = None, month = None):
@@ -88,4 +60,11 @@ pass
 
 @login_required
 def resource(request, resource=''):
-	pass
+	start = datetime.today() - timedelta(182)
+	end = start + timedelta(365)
+	
+	leavedays = LeaveDay.objects.filter(request__name__username__username__startswith=resource, \
+										date_of_leave__gte=start, date_of_leave__lt=end)
+	c = dict({'title': 'Report for ' + resource,'leavedays': leavedays,'resource':resource,'start':start,'end':end})
+	t = loader.get_template("resource.html")
+	return HttpResponse(t.render(c))	

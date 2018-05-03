@@ -1,62 +1,38 @@
-{% extends "timecards.html" %}
+{% extends "leavereport.html" %}
 {% load humanize %}
+{% load keyvalue %}
 {% block preamble %}
-	<div class="links">
-		{% for proj in projects %}
-			<span class="detail">
-				<a href="/timecards/todate/{{ proj.id }}/{{ asof }}">
-					{{ proj.project_name }}
-				</a>
-			</span>
-		{% endfor %}
-	</div>
+<h1>{{ title }}</h1>
 {% endblock %}
 {% block detail %}
-<h2><a href="/timecards/project/{{ results.0.proj }}/{{ year }}/{{ month }}">{{ results.0.proj }}</a> as of {{ asof }}</h2>
-<h3>Budget: ${{ budget|floatformat:2|intcomma }}, Remaining: ${{ remaining|floatformat:2|intcomma }}</h3>
+<h2>Leave for {{ year }}-{{ month }}</h2>
+<p><a href="{{ prev }}">Previous month</a></p>
+<p><a href="{{ next }}">Next month</a></p>
 <table class="detail">
-	<tr>
-		<td class="detail">
-			Month
-		</td>
-		<td class="detail">
-			Resource
-		</td>
-		<td class="detail">
-			Hours
-		</td>
-		<td class="detail">
-			Cost
-		</td>
-	</tr>
-	{% for row in results %}
-		<tr>
-			<td class="detail">
-				{% ifchanged row.month %}{{ row.month|date:"M Y" }}{% endifchanged %}
-			</td>
-			<td class="detail">
-				{{ row.name }}
-			</td>
-			<td class="detail" align="right">
-				{{ row.total_hours|floatformat:2|intcomma }}
-			</td>
-			<td class="detail" align="right">
-				${{ row.cost|floatformat:2|intcomma }}
-			</td>
-		</tr>
-	{% endfor %}
-	<tr>
-		<td class="detail">
-			Total
-		</td>
-		<td class="detail">
-		</td>
-		<td class="detail" align="right">
-			{{ hours|floatformat:2|intcomma }}
-		</td>
-		<td class="detail" align="right">
-			${{ cost|floatformat:2|intcomma }}
-		</td>
-	</tr>
+<tr>
+<td class="detail">Day</td>
+{% for k, v in pivot_tbl.0.iteritems %}
+{% if k != 'day' %}
+<td class="detail">
+<a href="/leavereq/{{ k }}">
+{{ k|slice:"0:5" }}
+</a>
+</td>
+{% endif %}
+{% endfor %}
+</tr>
+{% for day in pivot_tbl %}
+<tr>
+<td class="detail">{{ day.day|date:"d" }}</a></td>
+{% for k in pivot_tbl.0 %}
+{% if k == "day" %}
+{% else %}
+<td class="detail">
+{{ day|keyvalue:k }}
+</td>
+{% endif %}
+{% endfor %}
+<tr>
+{% endfor %}
 </table>
 {% endblock %}
