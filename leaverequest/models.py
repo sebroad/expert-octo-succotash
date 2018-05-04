@@ -80,6 +80,10 @@ class LeaveDay(models.Model):
 	hours = models.PositiveSmallIntegerField(default=8)
 	note = models.CharField(max_length=280, blank=True)
 	request = models.ForeignKey('LeaveRequest',on_delete=models.CASCADE)
+	
+	def approved_hours(self):
+		return self.hours if self.request.is_approved() else 0
+		
 	def __str__(self):
 		return '{:%m/%d/%y} {} --> {}'.format(self.date_of_leave, self.request.name, self.hours)
 	

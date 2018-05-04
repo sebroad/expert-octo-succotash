@@ -90,7 +90,8 @@ def todatesummary(cards, projid):
 def timesheet(request, sheetname):
 	cards = TimeCard.objects.filter(timesheet__name=sheetname)
 	pivot_tbl = pivot(cards, 'date_of_work','timesheet__resource__username__username','hours')
-	c = dict({'pivot': pivot_tbl, 'timecards': cards.order_by('date_of_work', 'project__project_name'), 'title': sheetname})
+	c = dict({'pivot': pivot_tbl, 'timecards': cards.order_by('date_of_work', 'project__project_name'), \
+				'title': sheetname, 'year': datetime.today().year, 'month': datetime.today().month})
 	t = loader.get_template("user.html")
 	return HttpResponse(t.render(c))	
 
