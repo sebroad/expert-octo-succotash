@@ -121,9 +121,12 @@
 	{% endfor %}
 {% else %}
 <td class="detail"></td>
-<td class="detail"></td>
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.implsub|intcomma }}</td>
 {% endif %}
 <td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.impl|intcomma }}</td>
+{% if totals.impldisc > 0 %}
+<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.impldisc|intcomma }}</td>
+{% endif %}
 </tr>
 {% endif %}
 

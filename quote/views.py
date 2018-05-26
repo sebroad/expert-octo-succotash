@@ -151,6 +151,8 @@ def get_totals(items):
 	totals['discount'] = 0
 	totals['total'] = 0
 	totals['impl'] = 0
+	totals['impldisc'] = 0
+	totals['implsub'] = 0
 	totals['data'] = 0
 	totals['datasub'] = 0
 	totals['datadisc'] = 0
@@ -201,6 +203,8 @@ def get_totals(items):
 		
 	for item in items.filter(product__is_implementation=True):
 		totals['impl'] += item.total()
+		totals['impldisc'] += item.discount()
+		totals['implsub'] += item.subtotal()
 
 	for item in items.filter(product__is_data=True):
 		totals['data'] += item.total()
