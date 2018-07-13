@@ -79,6 +79,7 @@ class Signature(models.Model):
 class Quote(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	created = models.DateTimeField(null=True,auto_now=True)
+	days_of_validity = models.IntegerField(default=30)
 	future_year = models.IntegerField(default=0)
 	num_years = models.IntegerField(default=1)
 	esc_percent = models.IntegerField(default=5)
@@ -97,7 +98,7 @@ class Quote(models.Model):
 	def number(self):
 		return '{:%Y%m%d%H%M%S}'.format(self.created)
 	def valid(self):
-		return self.created + timedelta(30)
+		return self.created + timedelta(int(self.days_of_validity))
 	def __str__(self):
 		return '#{:%y%m%d%H%M%S} @{}'.format(self.created, self.recipient)
 	
