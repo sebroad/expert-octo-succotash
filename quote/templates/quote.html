@@ -209,13 +209,13 @@ Thank you for your interest in PLEXOS,
 <br/>
 
 <p>
-	{% if signature.0.first_name %}
-		{{ signature.0.first_name }}{{" "}}{{ signature.0.last_name}}<br/>
-		{{ signature.0.email }} <br/>
+	{% if signature.first_name %}
+		{{ signature.first_name }}{{" "}}{{ signature.last_name}}<br/>
+		{{ signature.title }} <br/>
 		Energy Exemplar<br/>
-		{{ signature.0.title }} <br/>
-		{{ signature.0.location }} <br/>
-		{{ signature.0.phone_number }} <br/>
+		{{ signature.location }} <br/>
+		<a href="mailto:{{ signature.email }}">{{ signature.email }}</a> <br/>
+		{{ signature.phone_number }} <br/>
 	{% else %}
 		Invalid Signature 
 	{% endif %}

@@ -50,11 +50,10 @@ def quote(request, quotenum):
 	quote = Quote.objects.filter(id=quotenum)
 	items = LineItem.objects.filter(quote__id=quotenum).order_by('product__section__order', 'product__order_in_section')
 	totals = get_totals(items)
-	signature = Signature.objects.filter(email__iexact=request.user.email)
 	c = dict({'quote': quote, 'items': items, \
 			  'totals': totals, \
 			  'preamble': get_preamble(quote[0],totals), \
-			  'signature': signature,\
+			  'signature': quote[0].signature,\
 			  })
 	t = loader.get_template('quote.html')
 	return HttpResponse(t.render(c))
