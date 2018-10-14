@@ -7,17 +7,31 @@ from quote.models import *
 
 class LineItemInline(admin.TabularInline):
 	model = LineItem
+	fields = ['product','quantity','is_override','override','already','termincr','numterms','percent_discount']
+
+class LineItem2Inline(admin.TabularInline):
+	model = LineItem2
+	fields = ['product','quantity','is_override','override','already','termincr','numterms','percent_discount']
 
 class ProductInline(admin.TabularInline):
 	model = Product
-
+	
 class QuoteAdmin(admin.ModelAdmin):
 	list_display = ['number', 'recipient', 'created', 'show_quote_url',]
 	inlines = [LineItemInline, ]
 	ordering = ('-created',)
 	def show_quote_url(self, obj):
 		print obj.id
-		return format_html('<a target="_" href="/quote/{uuid}">{uuid}</a>', uuid=obj.id)
+		return format_html('<a target="_" href="/quote/v1/{uuid}">{uuid}</a>', uuid=obj.id)
+	show_quote_url.short_description = "Quote Page"
+
+class Quote2Admin(admin.ModelAdmin):
+	list_display = ['number', 'recipient', 'created', 'show_quote_url',]
+	inlines = [LineItem2Inline, ]
+	ordering = ('-created',)
+	def show_quote_url(self, obj):
+		print obj.id
+		return format_html('<a target="_" href="/quote/v2/{uuid}">{uuid}</a>', uuid=obj.id)
 	show_quote_url.short_description = "Quote Page"
 
 class ProductAdmin(admin.ModelAdmin):
@@ -29,22 +43,29 @@ class ProductAdmin(admin.ModelAdmin):
 	get_section_name.short_description = 'Section'
 
 class SectionAdmin(admin.ModelAdmin):
+	list_display = ('name', 'get_product_line_name', )
 	inlines = [ProductInline, ]
 	ordering = ('order',)
-
+	def get_product_line_name(self, obj):
+		return obj.product_line.name
+	get_product_line_name.short_description = 'Product Line'
+	
 class SignatureAdmin(admin.ModelAdmin):
 	model = Signature
 
-
+class ProductLineAdmin(admin.ModelAdmin):
+	list_display = ('name','is_v1','is_v2',)
+	
 # Rename the admin site
 admin.site.site_header = "PLEXOS by Energy Exemplar"
 
 # Register your models here.
 admin.site.register(Currency)
 admin.site.register(Signature, SignatureAdmin)
+admin.site.register(ProductLine, ProductLineAdmin)
 admin.site.register(TermIncrement)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Recipient)
 admin.site.register(Quote, QuoteAdmin)
-admin.site.register(LineItem)
+admin.site.register(QuoteVersion2, Quote2Admin)

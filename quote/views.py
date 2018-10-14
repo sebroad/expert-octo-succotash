@@ -58,6 +58,18 @@ def quote(request, quotenum):
 	t = loader.get_template('quote.html')
 	return HttpResponse(t.render(c))
 
+def quote2(request, quotenum):
+	quote = QuoteVersion2.objects.filter(id=quotenum)
+	items = LineItem2.objects.filter(quote__id=quotenum).order_by('product__section__order', 'product__order_in_section')
+	totals = get_totals(items)
+	c = dict({'quote': quote, 'items': items, \
+			  'totals': totals, \
+			  'preamble': get_preamble(quote[0],totals), \
+			  'signature': quote[0].signature,\
+			  })
+	t = loader.get_template('quote2.html')
+	return HttpResponse(t.render(c))
+	
 def get_preamble(quote, totals):
 	x = ''
 
@@ -192,11 +204,11 @@ def get_totals(items):
 		totals['softdisc'] += item.discount()
 		totals['already'] += item.already
 		totals['connect'] += 1 if 'connect' in item.product.name.lower() else 0
-		totals['engine'] += item.quantity if item.product.is_engine else 0
-		totals['electric'] += item.quantity if item.product.is_electric else 0
-		totals['gas'] += item.quantity if item.product.is_gas else 0
-		totals['water'] += item.quantity if item.product.is_water else 0
-		totals['solver'] += item.quantity if item.product.is_solver else 0
+		totals['engine'] += item.quantity * item.product.quantity if item.product.is_engine else 0
+		totals['electric'] += item.quantity * item.product.quantity if item.product.is_electric else 0
+		totals['gas'] += item.quantity * item.product.quantity if item.product.is_gas else 0
+		totals['water'] += item.quantity * item.product.quantity if item.product.is_water else 0
+		totals['solver'] += item.quantity * item.product.quantity if item.product.is_solver else 0
 		if item.termincr.text.lower() == 'week':
 			totals['weeks'] = max(totals['weeks'],item.numterms)
 		

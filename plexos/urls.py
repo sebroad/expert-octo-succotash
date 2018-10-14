@@ -22,7 +22,8 @@ import leaverequest.views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 	url(r'^$', quote.views.home),
-	url(r'^quote/(?P<quotenum>[0-9a-f\-]{36})', quote.views.quote),
+	url(r'^quote/v1/(?P<quotenum>[0-9a-f\-]{36})', quote.views.quote),
+	url(r'^quote/v2/(?P<quotenum>[0-9a-f\-]{36})', quote.views.quote2),
 	url(r'^timecards/resource/(?P<resname>[A-Za-z0-9]*)/(?P<year>[0-9]{4})/(?P<month>[0-9]{2})', timecards.views.resourcetime),	
 	url(r'^timecards/resource/(?P<resname>[A-Za-z0-9]*)$', timecards.views.resourcetime),	
 	url(r'^timecards/resource/(?P<year>[0-9]{4})/(?P<month>[0-9]{2})', timecards.views.resourcetime),	
