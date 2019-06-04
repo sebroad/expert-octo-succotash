@@ -118,3 +118,5 @@ httpd.*
 envvars
 
 *.exe
+.vscode/launch.json
+.vscode/settings.json
