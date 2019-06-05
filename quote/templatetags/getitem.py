@@ -2,4 +2,7 @@ from django.template.defaulttags import register
 
 @register.filter
 def get_item(dictionary, key):
-    return dictionary.get(key)
+	try:
+		return dictionary.get(key)
+	except Exception as ex:
+		return key

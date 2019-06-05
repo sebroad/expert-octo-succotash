@@ -48,6 +48,7 @@ class Product(models.Model):
 	year = models.IntegerField()
 	name = models.CharField(max_length=50)
 	quantity = models.IntegerField(default=1)
+	bundle = models.ManyToManyField('BundledProduct', blank = True)
 	price = models.DecimalField(max_digits=10, decimal_places=0)
 	note = models.CharField(max_length=200, blank=True)
 	is_software = models.BooleanField(default=True)
@@ -66,7 +67,13 @@ class Product(models.Model):
 		return self.section.product_line.name in ['Old PLEXOS']
 
 	def __str__(self):
-		return '{} -- {} ({})'.format(self.section.name, self.name, self.year)
+		return '{} -- {} -- {}'.format(self.section.product_line.name, self.section.name, self.name)
+
+class BundledProduct(models.Model):
+	quantity = models.IntegerField()
+	prod = models.ForeignKey(Product)
+	def __str__(self):
+		return '{}x {}'.format(self.quantity, self.prod)
 	
 class Recipient(models.Model):
 	fname = models.CharField(max_length=50, blank=True)
@@ -133,7 +140,73 @@ class QuoteVersion2(AbstractQuote):
 		verbose_name_plural = 'Quotes (new pricing)'
 		verbose_name = 'Quote (new pricing)'
 	pass
-	
+	def get_engine_license_count(self):
+		return sum([item.get_engine_license_count() for item in self.lineitem2_set.all()])
+	def get_solver_license_count(self):
+		return sum([item.get_solver_license_count() for item in self.lineitem2_set.all()])
+	def get_data_license_count(self):
+		return sum([item.get_data_license_count() for item in self.lineitem2_set.all()])
+		
+	def get_total(self):
+		return sum([item.total() for item in self.lineitem2_set.all()])
+	def get_subtotal(self):
+		return sum([item.subtotal() for item in self.lineitem2_set.all()])
+	def get_discount(self):
+		return sum([item.discount() for item in self.lineitem2_set.all()])
+	def get_multiyear_subtotals(self):
+		multiyear = dict()
+		for year in self.get_multi_year_range():
+			multiyear[year] = 0
+			for item in self.lineitem2_set.all():
+				multiyear[year] += item.get_multi_year_subtotal()[year]
+				#print multiyear
+		return multiyear
+	def get_software_total(self):
+		return sum([item.total() for item in self.lineitem2_set.filter(product__is_software=True)])
+	def get_software_subtotal(self):
+		return sum([item.subtotal() for item in self.lineitem2_set.filter(product__is_software=True)])
+	def get_software_discount(self):
+		return sum([item.discount() for item in self.lineitem2_set.filter(product__is_software=True)])
+	def get_software_multiyear_subtotals(self):
+		multiyear = dict()
+		for year in self.get_multi_year_range():
+			multiyear[year] = 0
+			for item in self.lineitem2_set.filter(product__is_software=True):
+				multiyear[year] += item.get_multi_year_subtotal()[year]
+				print multiyear
+		return multiyear
+
+	def get_training_total(self):
+		return sum([item.total() for item in self.lineitem2_set.filter(product__is_training=True)])
+	def get_training_subtotal(self):
+		return sum([item.subtotal() for item in self.lineitem2_set.filter(product__is_training=True)])
+	def get_training_discount(self):
+		return sum([item.discount() for item in self.lineitem2_set.filter(product__is_training=True)])
+	def get_training_multiyear_subtotals(self):
+		multiyear = dict()
+		for year in self.get_multi_year_range():
+			multiyear[year] = 0
+			for item in self.lineitem2_set.filter(product__is_training=True):
+				multiyear[year] += item.get_multi_year_subtotal()[year]
+				print multiyear
+		return multiyear
+
+	def get_data_total(self):
+		return sum([item.total() for item in self.lineitem2_set.filter(product__is_data=True)])
+	def get_data_subtotal(self):
+		return sum([item.subtotal() for item in self.lineitem2_set.filter(product__is_data=True)])
+	def get_data_discount(self):
+		return sum([item.discount() for item in self.lineitem2_set.filter(product__is_data=True)])
+	def get_data_multiyear_subtotals(self):
+		multiyear = dict()
+		for year in self.get_multi_year_range():
+			multiyear[year] = 0
+			for item in self.lineitem2_set.filter(product__is_data=True):
+				multiyear[year] += item.get_multi_year_subtotal()[year]
+				print multiyear
+		return multiyear
+
+
 class AbstractLineItem(models.Model):
 	class Meta:
 		abstract = True
@@ -151,7 +224,7 @@ class AbstractLineItem(models.Model):
 	def get_multi_year_subtotal(self):
 		multi_year_subtotal = dict()
 		for year in self.quote.get_multi_year_range(): 
-			if self.product.is_software or self.product.is_training:
+			if self.product.is_software or self.product.is_training or self.product.is_data:
 				multi_year_subtotal[year] = int(round(self.get_single_year_subtotal()* ((1+ float(self.quote.esc_percent)/100)**(year-1)), 0))
 			elif year == 1:
 				multi_year_subtotal[year] = self.get_single_year_subtotal()
@@ -185,6 +258,19 @@ class AbstractLineItem(models.Model):
 		return self.subtotal() - self.discount()
 	def is_discount(self):
 		return self.percent_discount > 0
+		
+	def get_engine_license_count(self):
+		count = sum([self.quantity * (bundle.quantity if bundle.prod.is_engine else 0) for bundle in self.product.bundle.all()])
+		return int(count + (self.quantity if self.product.is_engine else 0))
+		
+	def get_solver_license_count(self):
+		count = sum([self.quantity * (bundle.quantity if bundle.prod.is_solver else 0) for bundle in self.product.bundle.all()])
+		return int(count + (self.quantity if self.product.is_solver else 0))
+
+	def get_data_license_count(self):
+		count = sum([self.quantity * (bundle.quantity if bundle.prod.is_data else 0) for bundle in self.product.bundle.all()])
+		return int(count + (self.quantity if self.product.is_data else 0))	
+		
 	def __str__(self):
 		return '{} -- {}'.format(self.quote, self.description())
 
@@ -212,5 +298,5 @@ class LineItem2(AbstractLineItem):
 				'({} Paid)'.format(self.already) if self.already > 0 else '')
 		else:
 			return '{}'.format(self.product.name)
-			
+
 	pass

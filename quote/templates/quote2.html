@@ -5,55 +5,77 @@
 <table class="address">
 <tr>
 	<td>To:</td>
-	<td>{{ quote.0.recipient.fname }} {{ quote.0.recipient.lname }}</td>
+	<td>{{ quote.recipient.fname }} {{ quote.recipient.lname }}</td>
 	<td>Date:</td>
-	<td>{{ quote.0.created|date }}</td>
+	<td>{{ quote.created|date }}</td>
 </tr>
 <tr>
 	<td></td>
-	<td>{{ quote.0.recipient.company }}</td>
+	<td>{{ quote.recipient.company }}</td>
 	<td>Valid Until:</td>
-	<td>{{ quote.0.valid|date }}</td>
+	<td>{{ quote.valid|date }}</td>
 </tr>
 <tr>
 	<td></td>
-	<td>{{ quote.0.recipient.address|linebreaks }}</td>
+	<td>{{ quote.recipient.address|linebreaks }}</td>
 	<td>Quote #:</td>
-	<td>{{ quote.0.number }}</td>
+	<td>{{ quote.number }}</td>
 </tr>
 </table>
 {% endblock %}
 {% block preamble %}
-<p>Dear {{ quote.0.recipient.salutation }} {{ quote.0.recipient.lname }}:</p>
-<p>{{ preamble|linebreaks }}</p>
-<p>{{ quote.0.description }}</p>
-<p>NOTE: This quote is in {{ quote.0.currency.name }}.</p>
+<p>Dear {{ quote.recipient.salutation }} {{ quote.recipient.lname }}:</p>
+<p>
+Please find below your quote for {{ quote.lineitem2_set.all.0.product.section.product_line.name }} Licensing. 
+{% if quote.get_engine_license_count > 0 %}
+This quote includes {{ quote.get_engine_license_count }} 
+{{ quote.lineitem2_set.all.0.product.section.product_line.name }} License{% if quote.get_engine_license_count > 1%}s{% endif %}.
+{% endif %}
+{% if quote.get_solver_license_count > 0 %}
+This quote 
+{% if quote.get_engine_license_count > 0 %}
+also
+{% endif %}
+includes {{ quote.get_solver_license_count }} solver License{% if quote.get_solver_license_count > 1%}s{% endif %}.
+{% endif %}
+{% if quote.get_data_license_count > 0 %}
+This quote 
+{% if quote.get_engine_license_count > 0 or quote.get_solver_license_count > 0 %}
+also
+{% endif %}
+includes {{ quote.get_data_license_count }} dataset License{% if quote.get_engine_data_count > 1%}s{% endif %} 
+as noted below.
+{% endif %}
+
+</p>
+<p>{{ quote.description }}</p>
+<p>NOTE: This quote is in {{ quote.currency.name }}.</p>
 {% endblock %}
 {% block detail %}
 <table class="detail">
 <tr>
-<td width="160px" class="detail">Section</td>
-<td class="detail">Item</td>
-<td class="detail">Qty</td>
-{% if quote.0.num_years > 1 %}
-	{% for year in quote.0.get_multi_year_range %}
-		<td class="detail" align="right">{{ "Year " }}{{ year }}</td>
+<td width="160px" class="header">Section</td>
+<td class="header">Item</td>
+<td class="header">Qty</td>
+{% if quote.num_years > 1 %}
+	{% for year in quote.get_multi_year_range %}
+		<td class="header" align="right">{{ "Year " }}{{ year }}</td>
 	{% endfor %}
 {% else %}
-<td class="detail">Price</td>
-<td class="detail">Subtotal</td>
+<td class="header">Price</td>
+<td class="header">Subtotal</td>
 {% endif %}
-<td class="detail">Total</td>
-{% if totals.discount > 0 %}
-<td class="detail">Savings</td>
+<td class="header">Total</td>
+{% if quote.get_discount > 0 %}
+<td class="header">Savings</td>
 {% endif %}
 </tr>
-{% for item in items %}
+{% for item in quote.lineitem2_set.all %}
 <tr>
 <td class="detail">{% ifchanged item.product.section %}{{ item.product.section }}{% endifchanged %}</td>
 <td class="detail">{{ item.description }}</td>
 <td class="detail" align="right">{{ item.quantity }}</td>
-{% if quote.0.num_years > 1 %}
+{% if quote.num_years > 1 %}
 	{% for year, year_subtotal in item.get_multi_year_subtotal.items %}
 		<td class="detail" align="right">{{ item.quote.currency.symbol }}{{ year_subtotal|intcomma }}</td>
 	{% endfor %}
@@ -66,157 +88,136 @@
 <td class="detail" align="right">{{ item.quote.currency.symbol }}{{ item.discount|intcomma }}</td>
 {% endif %}
 </tr>
+{% for prod in item.product.bundle.all %}
+<tr><td	/><td class="detail">
+<i>{{ prod.quantity }}x {{ prod.prod.note }}</i>
+<td/></tr>
+{% endfor %}
 {% endfor %}
 
-{% if totals.software > 0 %}
+
+{% if quote.get_software_subtotal > 0 %}
 <tr>
 <td class="detail">Software Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
-{% if quote.0.num_years > 1 %}
-	{% for year in quote.0.get_multi_year_range %}
-		{% with "software_"|addstr:year as input %}
-		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma }}</td>
-		{% endwith %}
+{% if quote.num_years > 1 %}
+	{% for year in quote.get_multi_year_range %}
+		<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_software_multiyear_subtotals|get_item:year|intcomma }}</td>
 	{% endfor %}
 {% else %}
 <td class="detail"></td>
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.softsub|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_software_subtotal|intcomma }}</td>
 {% endif %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.software|intcomma }}</td>
-{% if totals.softdisc > 0 %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.softdisc|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_software_total|intcomma }}</td>
+{% if quote.get_software_discount > 0 %}
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_software_discount|intcomma }}</td>
 {% endif %}
 </tr>
 {% endif %}
 
-{% if totals.training > 0 %}
+{% if quote.get_training_subtotal > 0 %}
 <tr>
 <td class="detail">Training Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
-{% if quote.0.num_years > 1 %}
-	{% for year in quote.0.get_multi_year_range %}
-		{% with "training_"|addstr:year as input %}
-		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
-		{% endwith %}
+{% if quote.num_years > 1 %}
+	{% for year in quote.get_multi_year_range %}
+		<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_training_multiyear_subtotals|get_item:year|intcomma}}</td>
 	{% endfor %}
 {% else %}
 <td class="detail"></td>
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.training|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_training_subtotal|intcomma }}</td>
 {% endif %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.training|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ totals.get_training_total|intcomma }}</td>
 </tr>
 {% endif %}
 
-{% if totals.impl > 0 %}
+{% if quote.get_impl_subtotal > 0 %}
 <tr>
 <td class="detail">Implementation Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
-{% if quote.0.num_years > 1 %}
-	{% for year in quote.0.get_multi_year_range %}
-		{% with "impl_"|addstr:year as input %}
-		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
-		{% endwith %}
+{% if quote.num_years > 1 %}
+	{% for year in quote.get_multi_year_range %}
+		<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_impl_multiyear_subtotals|get_item:year|intcomma}}</td>
 	{% endfor %}
 {% else %}
 <td class="detail"></td>
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.implsub|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_impl_subtotal|intcomma }}</td>
 {% endif %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.impl|intcomma }}</td>
-{% if totals.impldisc > 0 %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.impldisc|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_impl_total|intcomma }}</td>
+{% if quote.get_impl_discount > 0 %}
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_impl_discount|intcomma }}</td>
 {% endif %}
 </tr>
 {% endif %}
 
-{% if totals.data > 0 %}
+{% if quote.get_data_subtotal > 0 %}
 <tr>
 <td class="detail">Dataset Total</td>
 <td class="detail"></td>
 <td class="detail"></td>
-{% if quote.0.num_years > 1 %}
-	{% for year in quote.0.get_multi_year_range %}
-		{% with "datasub_"|addstr:year as input %}
-		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
-		{% endwith %}
+{% if quote.num_years > 1 %}
+	{% for year in quote.get_multi_year_range %}
+		<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_data_multiyear_subtotals|get_item:year|intcomma}}</td>
 	{% endfor %}
 {% else %}
 <td class="detail"></td>
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.datasub|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_data_subtotal|intcomma }}</td>
 {% endif %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.data|intcomma }}</td>
-{% if totals.datadisc > 0 %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.datadisc|intcomma }}</td>
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_data_total|intcomma }}</td>
+{% if quote.get_data_discount > 0 %}
+<td class="detail" align="right">{{ quote.currency.symbol }}{{ quote.get_data_discount|intcomma }}</td>
 {% endif %}
 </tr>
 {% endif %}
 
 <tr>
-<td class="detail">Total</td>
-<td class="detail"></td>
-<td class="detail"></td>
-{% if quote.0.num_years > 1 %}
-	{% for year in quote.0.get_multi_year_range %}
-		{% with "totals_"|addstr:year as input %}
-		<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals|get_item:input|intcomma}}</td>
+<td class="total">Total</td>
+<td class="total"></td>
+<td class="total"></td>
+{% if quote.num_years > 1 %}
+	{% for year in quote.get_multi_year_range %}
+		{% with year as input %}
+		<td class="total" align="right">{{ quote.currency.symbol }}{{ quote.get_multiyear_subtotals|get_item:input|intcomma}}</td>
 		{% endwith %}
 	{% endfor %}
 {% else %}
-<td class="detail"></td>
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.subtotal|intcomma }}</td>
+<td class="total"></td>
+<td class="total" align="right">{{ quote.currency.symbol }}{{ quote.get_subtotal|intcomma }}</td>
 {% endif %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.total|intcomma }}</td>
-{% if totals.discount > 0 %}
-<td class="detail" align="right">{{ quote.0.currency.symbol }}{{ totals.discount|intcomma }}</td>
+<td class="total" align="right">{{ quote.currency.symbol }}{{ quote.get_total|intcomma }}</td>
+{% if quote.get_discount > 0 %}
+<td class="total" align="right">{{ quote.currency.symbol }}{{ quote.get_discount|intcomma }}</td>
 {% endif %}
 </tr>
 </table>
 {% endblock %}
 
-{% block training %}
-{% if totals.onsitetraining > 0 %}
-Client-site PLEXOS training can be arranged by either A) signing and returning this quote to indicate that 
-the pricing and conditions below for training are accepted, or B) creating a purchase order for the training
-which includes the pricing from the Training section of the quote above and the conditions of client-site
-training which are listed below, and having an authorized signer sign the purchase order.
-<ol>
-<li> Client to provide training space, including projector and adequate power plugs for the trainees and trainer.</li>
-<li> Client to provide computer hardware for training (i.e., laptops or desktop computers).</li>
-<li> Provided computer hardware must meet the minimum requirements for the use of PLEXOS.</li>
-<li> Client to provide IT support to install PLEXOS on the computer hardware for training.</li>
-<li> Energy Exemplar to provide PLEXOS software and installation instructions.</li>
-<li> Energy Exemplar to provide trainer and training materials for as many as ten trainees from Client.</li>
-<li> Energy Exemplar to provide PLEXOS licenses for each trainee for the duration of the training.</li>
-<li> Licenses will be provided on USB drives which will be returned to Energy Exemplar at the end of the training.</li>
-</ol>
-{% endif %}
-{% endblock %}
-
 {% block closing %}
 <p>
-We look forward to further conversation about PLEXOS and 
+We look forward to further conversation about {{ quote.lineitem2_set.all.0.product.section.product_line.name }} and 
 our products and services.
 </p>
 <p>
 Please regard this pricing information as confidential.
 </p>
 <p>
-Thank you for your interest in PLEXOS,
+Thank you for your interest in {{ quote.lineitem2_set.all.0.product.section.product_line.name }},
 </p>
 <br/>
 <br/>
 <br/>
 
 <p>
-	{% if signature.first_name %}
-		{{ signature.first_name }}{{" "}}{{ signature.last_name}}<br/>
-		{{ signature.title }} <br/>
+	{% if quote.signature.first_name %}
+		{{ quote.signature.first_name }}{{" "}}{{ quote.signature.last_name}}<br/>
+		{{ quote.signature.title }} <br/>
 		Energy Exemplar<br/>
-		{{ signature.location }} <br/>
-		<a href="mailto:{{ signature.email }}">{{ signature.email }}</a> <br/>
-		{{ signature.phone_number }} <br/>
+		{{ quote.signature.location }} <br/>
+		<a href="mailto:{{ signature.email }}">{{ quote.signature.email }}</a> <br/>
+		{{ quote.signature.phone_number }} <br/>
 	{% else %}
 		Invalid Signature 
 	{% endif %}

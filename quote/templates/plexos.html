@@ -8,15 +8,18 @@ Energy Exemplar Quotes
 {% endif %}
 </title>
 <style type="text/css">
-body { background-color: AliceBlue; }
-table.detail { border: 1px solid black; width: 700px; font-size: smaller; }
+body { background-color: White; }
+table.detail { border: 0px solid black; width: 700px; font-size: smaller; }
 table.banner, table.address { border: 0px; padding: 0px; width: 700px; }
-td.detail { border: 1px solid black; padding: 5px; }
+td.detail { border: 0px solid black; padding: 5px; }
+td.header { font-weight: bold; padding: 5px; }
+td.total { font-weight: bold; padding: 5px; }
 div { font-family: Helvetica ; }
-div.address, div.closing, div.preamble, div.training { padding: 10px; width: 700px; }
+div.address, div.closing, div.preamble, div.training, div.letterhead { padding: 10px; width: 700px; }
 </style>
 </head>
 <body>
+<div class="letterhead">
 <table class="banner">
 <tr>
 <td>
@@ -32,6 +35,7 @@ div.address, div.closing, div.preamble, div.training { padding: 10px; width: 700
 </td>
 </tr>
 </table>
+</div>
 <div class="main">
 <div class="address">
 {% block address %}

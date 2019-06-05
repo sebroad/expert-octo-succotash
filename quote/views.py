@@ -58,15 +58,12 @@ def quote(request, quotenum):
 	t = loader.get_template('quote.html')
 	return HttpResponse(t.render(c))
 
+@login_required
 def quote2(request, quotenum):
 	quote = QuoteVersion2.objects.filter(id=quotenum)
 	items = LineItem2.objects.filter(quote__id=quotenum).order_by('product__section__order', 'product__order_in_section')
 	totals = get_totals(items)
-	c = dict({'quote': quote, 'items': items, \
-			  'totals': totals, \
-			  'preamble': get_preamble(quote[0],totals), \
-			  'signature': quote[0].signature,\
-			  })
+	c = dict({'quote': quote[0]})
 	t = loader.get_template('quote2.html')
 	return HttpResponse(t.render(c))
 	
@@ -78,6 +75,7 @@ def get_preamble(quote, totals):
 
 		# Intro
 		x += "Please find below your quote for PLEXOS Licensing. "
+		
 		x += "This quote includes "
 
 		if totals['weeks'] > 0 and totals['engine'] > 0:

@@ -15,6 +15,12 @@ class LineItem2Inline(admin.TabularInline):
 
 class ProductInline(admin.TabularInline):
 	model = Product
+
+class BundledProductInline(admin.TabularInline):
+	model = BundledProduct
+	
+class SectionInline(admin.TabularInline):
+	model = Section
 	
 class QuoteAdmin(admin.ModelAdmin):
 	list_display = ['number', 'recipient', 'created', 'show_quote_url',]
@@ -35,9 +41,15 @@ class Quote2Admin(admin.ModelAdmin):
 	show_quote_url.short_description = "Quote Page"
 
 class ProductAdmin(admin.ModelAdmin):
-	list_display = ('get_section_name', 'name', )
+	list_display = ('get_product_name', 'note', 'get_product_line_name', 'get_section_name', )
 	list_filter = ('is_software','is_electric','is_gas','is_water','is_implementation','is_solver',)
 	ordering = ('section__order', 'order_in_section',)
+	def get_product_name(self, obj):
+		return '{}. {}'.format(obj.order_in_section, obj.name)
+	get_product_name.short_description = 'Product'
+	def get_product_line_name(self, obj):
+		return str(obj.section.product_line.name)
+	get_product_line_name.short_description = 'Product Line'
 	def get_section_name(self, obj):
 		return str(obj.section)
 	get_section_name.short_description = 'Section'
@@ -55,6 +67,7 @@ class SignatureAdmin(admin.ModelAdmin):
 
 class ProductLineAdmin(admin.ModelAdmin):
 	list_display = ('name','is_v1','is_v2',)
+	inlines = [SectionInline, ]
 	
 # Rename the admin site
 admin.site.site_header = "PLEXOS by Energy Exemplar"
@@ -69,3 +82,4 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Recipient)
 admin.site.register(Quote, QuoteAdmin)
 admin.site.register(QuoteVersion2, Quote2Admin)
+admin.site.register(BundledProduct)
