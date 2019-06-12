@@ -16,19 +16,21 @@ class LeaveRequest(models.Model):
 	Portland = 'PDX'
 	Sacramento = 'SAC'
 	Columbus = 'COL'
+	HomeOffice = 'HO'
 	OFFICE_CHOICES = ( \
 		(SandPoint, 'Sand Point'), \
 		(SaltLakeCity, 'Salt Lake City'), \
 		(Portland, 'Portland'), \
 		(Sacramento, 'Sacramento'), \
 		(Columbus, 'Columbus'), \
+		(HomeOffice, 'Home Office'), \
 		)
 	office = models.CharField( \
 		max_length=3, \
 		choices=OFFICE_CHOICES, \
 		default=Sacramento, \
 		)
-	LEAVE_TYPE = [('PTO', 'Vacation/PTO'),('FLT', 'Floating Holiday'),('SIC','Sick'),]
+	LEAVE_TYPE = [('PTO', 'Vacation/PTO'),('SIC','Sick'),]
 	name = models.ForeignKey(Resource)
 	amended = models.BooleanField(default=False)
 	

@@ -120,3 +120,4 @@ envvars
 *.exe
 .vscode/launch.json
 .vscode/settings.json
+plexos_web.db.old
