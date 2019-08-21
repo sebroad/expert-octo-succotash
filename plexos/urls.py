@@ -15,13 +15,20 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.shortcuts import render, loader
+from django.http import HttpResponseRedirect
+
 import quote.views
 import timecards.views
 import leaverequest.views
 
+def home(request):
+	return HttpResponseRedirect('https://www.energyexemplar.com')
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-	url(r'^$', quote.views.home),
+	url(r'^$', home),
+#	url(r'^$', quote.views.home),
 	url(r'^quote/v1/(?P<quotenum>[0-9a-f\-]{36})', quote.views.quote),
 	url(r'^quote/v2/(?P<quotenum>[0-9a-f\-]{36})', quote.views.quote2),
 	url(r'^timecards/resource/(?P<resname>[A-Za-z0-9]*)/(?P<year>[0-9]{4})/(?P<month>[0-9]{2})', timecards.views.resourcetime),	
