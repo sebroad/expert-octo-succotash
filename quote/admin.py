@@ -69,8 +69,6 @@ class ProductLineAdmin(admin.ModelAdmin):
 	list_display = ('name','is_v1','is_v2',)
 	inlines = [SectionInline, ]
 	
-# Rename the admin site
-admin.site.site_header = "PLEXOS by Energy Exemplar"
 
 # Register your models here.
 admin.site.register(Currency)

@@ -22,6 +22,11 @@ import quote.views
 import timecards.views
 import leaverequest.views
 
+# Rename the admin site
+admin.site.site_header = "Energy Exemplar North America Supplemental Staff Portal"
+admin.site.site_title = 'Manage Your Data'
+admin.site.index_title = admin.site.site_title
+
 def home(request):
 	return HttpResponseRedirect('https://www.energyexemplar.com')
 
