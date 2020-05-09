@@ -86,9 +86,9 @@ Complete dates of leave below:<br/>
 <tr><td>Applicant Signature: <span class="sig">{{ request.name.get_full_name }}</span></td>
 <td>Date: {{ request.application_date }}</td></tr>
 <tr><td colspan="2">The undersigned manager/supervisor approves the leave </td></tr>
-<tr><td>Signature: <span class="sig">{{ approval.approver.get_full_name }}</span></td>
-<td>Date: {{ approval.approval_timestamp }}</td></tr>
-<tr><td>Print Name: {{ approval.approver.get_full_name }}</td><td>Phone Number: {{ approval.approver.phone }}</td></tr>
+<tr><td>Signature: <span class="sig">{% if approval %}{{ approval.approver.get_full_name }}{% endif %}</span></td>
+<td>Date: {% if approval %}{{ approval.approval_timestamp }}{% endif %}</td></tr>
+<tr><td>Print Name: {% if approval.approver %}{{ approval.approver.get_full_name }}{% endif %}</td><td>Phone Number: {% if approval.approver %}{{ approval.approver.phone }}{% endif %}</td></tr>
 </table>
 </p>
 <p style="color=blue;"><center>energyexemplar.com</center></p>

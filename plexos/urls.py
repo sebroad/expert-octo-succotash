@@ -28,7 +28,7 @@ admin.site.site_title = 'Manage Your Data'
 admin.site.index_title = admin.site.site_title
 
 def home(request):
-	return HttpResponseRedirect('https://www.energyexemplar.com')
+	return HttpResponseRedirect('admin')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

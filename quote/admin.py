@@ -27,7 +27,7 @@ class QuoteAdmin(admin.ModelAdmin):
 	inlines = [LineItemInline, ]
 	ordering = ('-created',)
 	def show_quote_url(self, obj):
-		print obj.id
+		#print obj.id
 		return format_html('<a target="_" href="/quote/v1/{uuid}">{uuid}</a>', uuid=obj.id)
 	show_quote_url.short_description = "Quote Page"
 
@@ -36,7 +36,7 @@ class Quote2Admin(admin.ModelAdmin):
 	inlines = [LineItem2Inline, ]
 	ordering = ('-created',)
 	def show_quote_url(self, obj):
-		print obj.id
+		#print obj.id
 		return format_html('<a target="_" href="/quote/v2/{uuid}">{uuid}</a>', uuid=obj.id)
 	show_quote_url.short_description = "Quote Page"
 

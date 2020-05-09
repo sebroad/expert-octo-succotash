@@ -35,7 +35,7 @@ class ProductLine(models.Model):
 	
 class Section(models.Model):
 	name = models.CharField(max_length=50)
-	product_line = models.ForeignKey(ProductLine, default=0)
+	product_line = models.ForeignKey(ProductLine, default=0, on_delete=models.CASCADE)
 	note = models.TextField(blank=True)
 	description = models.TextField(blank=True)
 	order = models.IntegerField()
@@ -43,7 +43,7 @@ class Section(models.Model):
 		return '{}. {}'.format(self.order, self.name)
 		
 class Product(models.Model):
-	section = models.ForeignKey(Section)
+	section = models.ForeignKey(Section, on_delete=models.CASCADE)
 	order_in_section = models.IntegerField()
 	year = models.IntegerField()
 	name = models.CharField(max_length=50)
@@ -71,7 +71,7 @@ class Product(models.Model):
 
 class BundledProduct(models.Model):
 	quantity = models.IntegerField()
-	prod = models.ForeignKey(Product)
+	prod = models.ForeignKey(Product, on_delete=models.CASCADE)
 	def __str__(self):
 		return '{}x {}'.format(self.quantity, self.prod)
 	
@@ -110,11 +110,11 @@ class AbstractQuote(models.Model):
 	future_year = models.IntegerField(default=0)
 	num_years = models.IntegerField(default=1)
 	esc_percent = models.IntegerField(default=5)
-	recipient = models.ForeignKey(Recipient, null=True, blank=True)
-	currency = models.ForeignKey(Currency, default = 1)
+	recipient = models.ForeignKey(Recipient, null=True, blank=True, on_delete=models.CASCADE)
+	currency = models.ForeignKey(Currency, default = 1, on_delete=models.CASCADE)
 	description = models.TextField(blank=True)
 	pdf_file = models.FileField(blank=True)
-	signature = models.ForeignKey(Signature, null=True)
+	signature = models.ForeignKey(Signature, null=True, on_delete=models.CASCADE)
 	is_approved = models.BooleanField(default=False)
 	def is_expired(self):
 		return datetime.now() > self.created.replace(tzinfo=None) + timedelta(30)
@@ -173,7 +173,7 @@ class QuoteVersion2(AbstractQuote):
 			multiyear[year] = 0
 			for item in self.lineitem2_set.filter(product__is_software=True):
 				multiyear[year] += item.get_multi_year_subtotal()[year]
-				print multiyear
+				#print multiyear
 		return multiyear
 
 	def get_training_total(self):
@@ -188,7 +188,7 @@ class QuoteVersion2(AbstractQuote):
 			multiyear[year] = 0
 			for item in self.lineitem2_set.filter(product__is_training=True):
 				multiyear[year] += item.get_multi_year_subtotal()[year]
-				print multiyear
+				#print multiyear
 		return multiyear
 
 	def get_data_total(self):
@@ -203,7 +203,7 @@ class QuoteVersion2(AbstractQuote):
 			multiyear[year] = 0
 			for item in self.lineitem2_set.filter(product__is_data=True):
 				multiyear[year] += item.get_multi_year_subtotal()[year]
-				print multiyear
+				#print multiyear
 		return multiyear
 
 
@@ -211,14 +211,14 @@ class AbstractLineItem(models.Model):
 	class Meta:
 		abstract = True
 		
-	product = models.ForeignKey(Product)
+	product = models.ForeignKey(Product, on_delete=models.CASCADE)
 	quantity = models.DecimalField(default=1, max_digits=5, decimal_places=2)
 	is_override = models.BooleanField(default=False)
 	override = models.DecimalField(default=0, max_digits=10, decimal_places=0)
 	already = models.IntegerField(default=0)
-	termincr = models.ForeignKey(TermIncrement)
+	termincr = models.ForeignKey(TermIncrement, on_delete=models.CASCADE)
 	numterms = models.IntegerField(default=1)
-	quote = models.ForeignKey(Quote)
+	quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
 	percent_discount = models.DecimalField(decimal_places=0, max_digits=3, default=0)
 
 	def get_multi_year_subtotal(self):
@@ -275,7 +275,7 @@ class AbstractLineItem(models.Model):
 		return '{} -- {}'.format(self.quote, self.description())
 
 class LineItem(AbstractLineItem):
-	product = models.ForeignKey(Product, limit_choices_to={'section__product_line__is_v1': 'True'})
+	product = models.ForeignKey(Product, limit_choices_to={'section__product_line__is_v1': 'True'}, on_delete=models.CASCADE)
 	def description(self):
 		if self.product.is_software:
 			return '{}-{} license fee for {} {}'.format( \
@@ -289,8 +289,8 @@ class LineItem(AbstractLineItem):
 class LineItem2(AbstractLineItem):
 	class Meta:
 		verbose_name_plural = 'Line Item (new pricing)'
-	product = models.ForeignKey(Product, limit_choices_to={'section__product_line__is_v2': 'True'})
-	quote = models.ForeignKey(QuoteVersion2)
+	product = models.ForeignKey(Product, limit_choices_to={'section__product_line__is_v2': 'True'}, on_delete=models.CASCADE)
+	quote = models.ForeignKey(QuoteVersion2, on_delete=models.CASCADE)
 	def description(self):
 		if self.product.is_software:
 			return '{}-{} license fee for {} {}'.format( \
