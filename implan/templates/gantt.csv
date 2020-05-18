@@ -1,0 +1,9 @@
+{% for plan in plans %}ID,Name,Begin date,End date,Duration,Completion,Cost,Coordinator,Predecessors,Outline number,Resources,Assignments
+{% for task in plan.get_tasks %}{{ task.order }},{{ task.name }},{{ task.start_date|date:"n/j/y" }},{{ task.end_date|date:"n/j/Y" }},{{ task.duration }},{{ task.completion }},{{ task.cost }},{{ task.coord }},{{ task.pred }},{{ task.outline }},{{ task.res }},{{ task.assign }}
+{% endfor %}
+
+ID,Name,Default role,e-mail,Phone,Assignment role,Standard rate
+0,{{ plan.group.company.name }},Default:1,,,,0
+1,Energy Exemplar,Default:1,,,,2000
+2,Consultant,Default:1,,,,2000
+{% endfor %}

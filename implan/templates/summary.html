@@ -1,0 +1,21 @@
+{% load humanize %}
+{% for plan in plans %}
+<table class="summary">
+<tr><td class="header">Project Name</td><td>{{ plan.project_name }}</td></tr>
+<tr><td class="header">Account</td><td>{{ plan.group.company.name }}</td></tr>
+<tr><td class="header">Group</td><td>{{ plan.group.name }}</td></tr>
+{% for use in plan.usecase.all %}
+<tr><td class="header">Use Case</td><td>{{ use.name }}</td></tr>
+{% endfor %}
+<tr><td class="header">Integration Plan</td><td>{{ plan.integration }}</td></tr>
+<tr><td class="header">User FTEs</td><td>{{ plan.company_FTE }}</td></tr>
+<tr><td class="header">Energy Exemplar FTEs</td><td>{{ plan.ee_FTE }}</td></tr>
+<tr><td class="header">Consultant FTEs</td><td>{{ plan.cons_FTE }}</td></tr>
+</table>
+<table class="task">
+    <tr><td class="header">Task ID</td><td class="header">Task Name</td><td class="header">Start</td><td class="header">End</td><td class="header">Cost</td><td class="header">Assigned</td></tr>
+{% for task in plan.get_tasks %}
+    <tr><td>{{ task.outline }}</td><td>{{ task.name }}</td><td>{{ task.start_date }}</td><td>{{ task.end_date }}</td><td style="text-align:right">${{ task.cost|floatformat:0|intcomma }}</td><td>{{ task.res }}</td></tr>
+{% endfor %}
+</table>
+{% endfor %}
