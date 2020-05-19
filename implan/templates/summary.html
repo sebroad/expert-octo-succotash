@@ -1,5 +1,12 @@
+<head>
+    <!-- Plotly.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
 {% load humanize %}
+<body>
 {% for plan in plans %}
+<h1>Project Overview</h1>
 <table class="summary">
 <tr><td class="header">Project Name</td><td>{{ plan.project_name }}</td></tr>
 <tr><td class="header">Account</td><td>{{ plan.group.company.name }}</td></tr>
@@ -12,6 +19,90 @@
 <tr><td class="header">Energy Exemplar FTEs</td><td>{{ plan.ee_FTE }}</td></tr>
 <tr><td class="header">Consultant FTEs</td><td>{{ plan.cons_FTE }}</td></tr>
 </table>
+  
+<h1>Project Gantt Chart</h1>
+
+<!-- Plots go in blank <div> elements. 
+    You can size them in the plot layout,
+    or give the div a size as shown here.
+-->
+<div id="tester" style="width:90%;height:500px;">
+    <script>
+        var data = {
+          "{{ plan.project_name }} Project Plan":{
+            "color": "#337ab7",
+            "data":[
+                {% for task in plan.get_tasks %}{% if forloop.counter != 1 %},{% endif %}
+                {
+                    "startDate": "{{ task.start_date|date:"Y-m-d" }} 00:00",
+                    "endDate": "{{ task.end_date|date:"Y-m-d" }} 23:59",
+                    "taskName": "{{ task.name }}"
+                }{% endfor %}
+            ]
+          }  
+        };
+        
+        var traces = [];
+        Object.keys(data).forEach(function(key,index){
+          data[key].data.forEach(function(dt,index){
+              var trace = {
+                x: [dt.startDate, dt.endDate],
+                y: [-index - 1, -index - 1],
+                mode:'lines',
+                line:{width:20, color : data[key].color} ,
+                showlegend:false
+              };
+            traces.push(trace);
+          });
+        });
+        
+        var layout = {
+          hovermode: !1,
+                            autosize: true,
+                            xaxis: {
+                                title: '',
+                                titlefont: {
+                                    size: 10
+                                },
+                                tickfont: {
+                                    size: 10
+                                },
+                                showgrid: true,
+                                zerolinecolor: '#969696',
+                                zerolinewidth: 1,
+                            },
+                            yaxis: {
+                                title: '',
+                                titlefont: {
+                                    size: 10
+                                },
+                                tickfont: {
+                                    size: 10
+                                },
+                                showgrid: true,
+                                zerolinecolor: '#969696',
+                                zerolinewidth: 1,
+                            },
+                            legend: {
+                                orientation: 'h',
+                                x: 0.5,
+                                y: -0.2,
+                                xanchor: 'center'
+                            },
+                            margin: {
+                                l: 50,
+                                b: 80,
+                                r: 30,
+                                t: 30,
+                                pad: 5
+                            }
+        };
+        
+        Plotly.newPlot($('#tester').get(0), traces, layout);
+    </script>
+</div>
+
+<h1>Project Schedule</h1>
 <table class="task">
     <tr><td class="header">Task ID</td><td class="header">Task Name</td><td class="header">Start</td><td class="header">End</td><td class="header">Cost</td><td class="header">Assigned</td></tr>
 {% for task in plan.get_tasks %}
@@ -19,3 +110,4 @@
 {% endfor %}
 </table>
 {% endfor %}
+</body>

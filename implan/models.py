@@ -73,7 +73,6 @@ class PhaseModel(AuditedModel):
         t.order = order
         t.name = title
         t.start_date = start_date
-        t.duration = duration
         t.cost = duration * 8 * loading * self.ee_rate * self.ee_fte
         t.end_date = calculate_dates(start_date, duration)
         t.duration = duration
@@ -452,12 +451,10 @@ class SystemIntegration(PhaseModel):
         '''
         
         for i in range(self.streams):
-            if i == 0:
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, 40 * 60, suborder=suborder, title='Replicate ' + self.system_name)
-
             is_tasks = True
-            time = 80 * 60
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='{} Data Stream ({})'.format(self.method, i + 1))
+            if i == 0:
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time=40 * 60, suborder=suborder, title='Replicate ' + self.system_name)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time=80*60, suborder=suborder, title='{} Data Stream ({})'.format(self.method, i + 1))
 
         if is_tasks: 
             t = Task()
@@ -526,24 +523,24 @@ class ProductTraining(PhaseModel):
 
             if self.basic:
                 is_tasks = True
-                time = 16 * 60 * (2 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
                 order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Onsite Basic Training', is_ee = True)
 
             if self.advance:
                 is_tasks = True
-                time = 16 * 60 * (2 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
                 order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Onsite Advanced Training', is_ee = True)
 
         else:
 
             if self.basic:
                 is_tasks = True
-                time = 16 * 60 * (2 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
                 order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Webinar Basic Training', is_ee = True)
 
             if self.advance:
                 is_tasks = True
-                time = 16 * 60 * (2 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
                 order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Webinar Advanced Training', is_ee = True)
             
         if is_tasks: 
@@ -628,26 +625,22 @@ class DetailedPlanningPhase(PhaseModel):
         # updates
         if self.scope > 0:
             is_tasks = True
-            time = 8 * 60 * self.scope * self.implan.ee_FTE / self.ee_multipler
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Scoping', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.scope, suborder=suborder, title='Scoping', is_ee=True)
             
         # updates
         if self.spec > 0:
             is_tasks = True
-            time = 8 * 60 * self.spec * self.implan.ee_FTE / self.ee_multipler
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Specifications', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.spec, suborder=suborder, title='Specifications', is_ee=True)
 
         # updates
         if self.design > 0:
             is_tasks = True
-            time = 8 * 60 * self.design * self.implan.ee_FTE / self.ee_multipler
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Design', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.updates, suborder=suborder, title='Design', is_ee=True)
 
         # updates
         if self.quality > 0:
             is_tasks = True
-            time = 8 * 60 * self.quality * self.implan.ee_FTE / self.ee_multipler
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Quality Plan', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.quality, suborder=suborder, title='Quality Plan', is_ee=True)
 
         if is_tasks: 
             t = Task()
@@ -695,26 +688,24 @@ class Validation(PhaseModel):
         # updates
         if self.training > 0:
             is_tasks = True
-            time = 8 * 60 * self.training / self.implan.ee_FTE
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Implementation Training', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.training, suborder=suborder, title='Implementation Training', is_ee=True)
             
         # updates
         if self.accept > 0:
             is_tasks = True
-            time = 8 * 60 * self.accept / self.implan.ee_FTE
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Functional Testing', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.accept, suborder=suborder, title='Functional Testing', is_ee=True)
 
         # updates
         if self.test > 0:
             is_tasks = True
             time = 8 * 60 * self.test / self.implan.ee_FTE
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Model Testing', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.test, suborder=suborder, title='Model Testing', is_ee=True)
 
         # updates
         if self.integ > 0:
             is_tasks = True
             time = 8 * 60 * self.integ / self.implan.ee_FTE
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Integration Testing', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.integ, suborder=suborder, title='Integration Testing', is_ee=True)
 
         if is_tasks: 
             t = Task()

@@ -121,3 +121,4 @@ envvars
 .vscode/launch.json
 .vscode/settings.json
 plexos_web.db.old
+implan/templates/gantt.html
