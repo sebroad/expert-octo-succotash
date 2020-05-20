@@ -4,6 +4,7 @@ from django.db.models import signals
 from functools import partial
 from django.utils import timezone
 from math import ceil
+import json
 
 from datetime import datetime, timedelta
 
@@ -136,6 +137,20 @@ class Task(models.Model):
     outline = models.CharField(max_length=100, default='')
     res = models.CharField(max_length=100, default='')
     assign = models.CharField(max_length=100, default='')
+    
+    @property
+    def phasenum(self): return int(self.outline.split('.')[0])
+
+    @property
+    def itemnum(self): return int(self.outline.split('.')[1]) if '.' in self.outline else 0
+
+    @property
+    def color(self):
+        base_colors = [[114,147,203],[225,151,76],[132,186,91],[211,94,96], \
+            [128,133,133],[144,103,167],[171,104,87],[204,194,16]]
+        base_color = list(base_colors[self.phasenum % 8])
+        lighten = [min(int(c*(1.05**self.itemnum)),255) for c in base_color]
+        return hex(sum([c*(16**p) for c, p in zip(lighten,[4,2,0])])).replace('0x','#').upper()
 
 class Deployment(PhaseModel):
     implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
@@ -851,6 +866,16 @@ class ImplementationPlan(AuditedModel):
 
     def get_tasks(self):
         return Task.objects.filter(implan__id=self.id).order_by('outline')
+
+    def get_tasks_json(self):
+        jobj = [{ \
+            "name":obj.name, \
+            "start_date":"{:%Y-%m-%d} 00:00".format(obj.start_date), \
+            "end_date":"{:%Y-%m-%d} 23:59".format(obj.end_date), \
+            "color":obj.color \
+            } for obj in self.get_tasks()]
+        test = json.dumps(jobj)
+        return test
 
 def add_task_objects(request, sender, instance=None, **kwargs):
     """

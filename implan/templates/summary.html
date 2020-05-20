@@ -21,7 +21,6 @@
 </table>
   
 <h1>Project Gantt Chart</h1>
-
 <!-- Plots go in blank <div> elements. 
     You can size them in the plot layout,
     or give the div a size as shown here.
@@ -31,12 +30,12 @@
         var data = {
           "{{ plan.project_name }} Project Plan":{
             "color": "#337ab7",
-            "data":[
-                {% for task in plan.get_tasks %}{% if forloop.counter != 1 %},{% endif %}
+            "data":[{% for task in plan.get_tasks %}{% if forloop.counter != 1 %},{% endif %}
                 {
-                    "startDate": "{{ task.start_date|date:"Y-m-d" }} 00:00",
-                    "endDate": "{{ task.end_date|date:"Y-m-d" }} 23:59",
-                    "taskName": "{{ task.name }}"
+                    "start_date": "{{ task.start_date|date:"Y-m-d" }} 00:00",
+                    "end_date": "{{ task.end_date|date:"Y-m-d" }} 23:59",
+                    "name": "{{ task.name }}",
+                    "color": "{{ task.color }}",
                 }{% endfor %}
             ]
           }  
@@ -45,11 +44,12 @@
         var traces = [];
         Object.keys(data).forEach(function(key,index){
           data[key].data.forEach(function(dt,index){
-              var trace = {
-                x: [dt.startDate, dt.endDate],
-                y: [-index - 1, -index - 1],
+              var trace = { 
+                x: [dt.start_date, dt.end_date],
+                y: [dt.name, dt.name],
+                name: "",
                 mode:'lines',
-                line:{width:20, color : data[key].color} ,
+                line:{width:20, color : dt.color} ,
                 showlegend:false
               };
             traces.push(trace);
@@ -57,45 +57,20 @@
         });
         
         var layout = {
-          hovermode: !1,
-                            autosize: true,
-                            xaxis: {
-                                title: '',
-                                titlefont: {
-                                    size: 10
-                                },
-                                tickfont: {
-                                    size: 10
-                                },
-                                showgrid: true,
-                                zerolinecolor: '#969696',
-                                zerolinewidth: 1,
-                            },
-                            yaxis: {
-                                title: '',
-                                titlefont: {
-                                    size: 10
-                                },
-                                tickfont: {
-                                    size: 10
-                                },
-                                showgrid: true,
-                                zerolinecolor: '#969696',
-                                zerolinewidth: 1,
-                            },
-                            legend: {
-                                orientation: 'h',
-                                x: 0.5,
-                                y: -0.2,
-                                xanchor: 'center'
-                            },
-                            margin: {
-                                l: 50,
-                                b: 80,
-                                r: 30,
-                                t: 30,
-                                pad: 5
-                            }
+            hovermode: !1, autosize: true,
+            title: '{{plan.project_name}} Project Plan', titlefont: { size: 24 },
+            xaxis: {
+                title: '{{ plan.project_name }} Project Timeline',
+                titlefont: { size: 16 }, tickfont: { size: 12 },
+                showgrid: true, zerolinecolor: '#969696', zerolinewidth: 1,
+            },
+            yaxis: {
+                title: '{{ plan.project_name }} Project Tasks',
+                titlefont: { size: 16 }, tickfont: { size: 12 },
+                showgrid: true, zerolinecolor: '#969696', zerolinewidth: 1, autorange: "reversed",
+            },
+            legend: { orientation: 'h', x: 0.5, y: -0.2, xanchor: 'center' },
+            margin: { l: 200, b: 80, r: 30, t: 50, pad: 5 }
         };
         
         Plotly.newPlot($('#tester').get(0), traces, layout);
