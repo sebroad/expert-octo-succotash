@@ -6,7 +6,6 @@
 {% load humanize %}
 <body>
 {% for plan in plans %}
-<h1>Project Overview</h1>
 <table class="summary">
 <tr><td class="header">Project Name</td><td>{{ plan.project_name }}</td></tr>
 <tr><td class="header">Account</td><td>{{ plan.group.company.name }}</td></tr>
@@ -15,9 +14,9 @@
 <tr><td class="header">Use Case</td><td>{{ use.name }}</td></tr>
 {% endfor %}
 <tr><td class="header">Integration Plan</td><td>{{ plan.integration }}</td></tr>
-<tr><td class="header">User FTEs</td><td>{{ plan.company_FTE }}</td></tr>
-<tr><td class="header">Energy Exemplar FTEs</td><td>{{ plan.ee_FTE }}</td></tr>
-<tr><td class="header">Consultant FTEs</td><td>{{ plan.cons_FTE }}</td></tr>
+<tr><td class="header">Company Hours of Effort</td><td>{{ plan.company_effort }}</td></tr>
+<tr><td class="header">Energy Exemplar Hours of Effort</td><td>{{ plan.ee_effort }}</td></tr>
+<tr><td class="header">Energy Exemplar Project Cost</td><td>{{ plan.ee_cost }}</td></tr>
 </table>
   
 <h1>Project Gantt Chart</h1>
@@ -31,12 +30,7 @@
           "{{ plan.project_name }} Project Plan":{
             "color": "#337ab7",
             "data":[{% for task in plan.get_tasks %}{% if forloop.counter != 1 %},{% endif %}
-                {
-                    "start_date": "{{ task.start_date|date:"Y-m-d" }} 00:00",
-                    "end_date": "{{ task.end_date|date:"Y-m-d" }} 23:59",
-                    "name": "{{ task.name }}",
-                    "color": "{{ task.color }}",
-                }{% endfor %}
+                {"start_date": "{{ task.start_date|date:"Y-m-d" }} 00:00","end_date": "{{ task.end_date|date:"Y-m-d" }} 23:59","name": "{{ task.name }}","color": "{{ task.color }}",}{% endfor %}
             ]
           }  
         };

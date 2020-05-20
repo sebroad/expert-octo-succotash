@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.shortcuts import render, loader
-from django.urls import path, include
 from django.http import HttpResponseRedirect
 
 import quote.views
@@ -63,5 +62,4 @@ urlpatterns = [
 	url(r'^leavereq/{0,1}$', leaverequest.views.summary),
 	url(r'^implan/v1/(?P<planid>[0-9]*)$', implan.views.summary),
 	url(r'^implan/v1/gantt/(?P<planid>[0-9]*)$', implan.views.gantt),
-    path('django_plotly_dash/', include('django_plotly_dash.urls')),
 ]
