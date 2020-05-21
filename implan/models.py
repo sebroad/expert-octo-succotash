@@ -650,7 +650,7 @@ class DetailedPlanningPhase(PhaseModel):
         # updates
         if self.design > 0:
             is_tasks = True
-            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.updates, suborder=suborder, title='Design', is_ee=True)
+            order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.design, suborder=suborder, title='Design', is_ee=True)
 
         # updates
         if self.quality > 0:
