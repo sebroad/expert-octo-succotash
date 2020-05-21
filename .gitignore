@@ -101,7 +101,6 @@ ENV/
 .mypy_cache/
 
 # django related
-**/settings.py
 **/admin/**
 **/*.pyc
 *.sqlite3
