@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'leaverequest',
     'implan',
     #'productselection',
-    'mod_wsgi.server',
+    #'mod_wsgi.server',
 ]
 
 MIDDLEWARE = [
