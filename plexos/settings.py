@@ -37,13 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'quote',
     'timecards',
     'leaverequest',
     'implan',
     #'productselection',
-    #'mod_wsgi.server',
+    'mod_wsgi.server',
 ]
 
 MIDDLEWARE = [
