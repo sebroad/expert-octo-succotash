@@ -1,0 +1,85 @@
+<head>
+    <title>{{ plans.0.group.company.name }} -- {{ plans.0.group.name }} {{ plans.0.project_name }}</title>
+    {% block dependencies %}{% endblock %}
+    <style>
+        div,table {margin: auto;}
+        div.break {page-break-before: always;}
+        p.body, div.gantt, div.letterhead, table.summary, table.task, table.banner, h1 {width: 10.5in; margin:auto;}
+        p.body {text-align: justify; padding: 10px;}
+        p.letterhead {padding: -12px; font-size: large;}
+        div.gantt {height: 600px; page-break-inside: avoid;}
+        td.header {font-weight: bold;}
+        table.summary, table.task {border: 2px solid black; padding: 4px; border-collapse: collapse; width: }
+        td.summary, th, td.header {border: 1px solid black; padding: 4px; font-size: larger;}
+        td.summary {text-align: right;}
+        td.detail, td.numberdetail {border: 1px solid black; padding: 4px; }
+        td.numberdetail {text-align: right;}
+        body {text-align: center;}
+        h1 {text-align: left; padding: 20px;}
+        table, figure { page-break-inside: avoid; }
+        table { page-break-inside:auto }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+    </style>
+</head>
+<body>
+    <div class="letterhead">
+        <table class="banner">
+            <tr>
+                <td><img src="/static/EnergyExemplar.png"/></td>
+                <td align="right">
+                    <div><p class="letterhead">
+                        <b>Energy Exemplar LLC</b><br/>
+                        Offices in Sacramento, Salt Lake City, and Columbus<br/>
+                        3013 Douglas Blvd, Suite 120<br/>
+                        Roseville, CA 95661
+                    </p></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <h1>Rough Implementation Plan for {{ plans.0.group.company.name }} -- {{ plans.0.group.name }}</h1>
+    <p class="body">
+        Energy Exemplar is pleased to present a rough implementation plan for the {{ plans.0.project_name }}
+        project for {{ plans.0.group.company.name }} -- {{ plans.0.group.name }}. This project plan represents
+        information collected from {{ plans.0.group.company.name }} by Energy Exemplar's Solution Engineering
+        team. This plan is not an official proposal nor a highly detailed and optimized plan, but rather an
+        indication of how this project may unfold based on our initial understanding of your objectives and
+        available resources.
+    </p>
+    <p class="body">
+        Energy Exemplar is also pleased to be able to offer professional services for software implementation.
+        This rough implementation plan does {% if plans.0.ee_effort < 1 %} not {% endif %} include these services, 
+        as noted in the Detail section below. These services may be scaled up or down to help you accelerate 
+        schedule or reduce cost. We have a knowledgeable and expert team available to help!
+    </p>
+    <p class="body">
+        Here is a brief summary of our understanding of your implementation needs. {{ plans.0.integration }}
+    </p>
+    <h1>Project Summary for {{ plans.0.project_name }}</h1>
+    {% block summary %}{% endblock %}
+    <div class="break"></div>
+    <h1>Overview Project Plan for {{ plans.0.project_name }}</h1>
+    <p class="body">
+        The Gantt chart below represents an rough project plan with resource assumptions shown in 
+        somewhat greater detail below. This plan and the timeline are derived from information 
+        received to date. Further information may extend or contract the timelines. The Solution Engineering
+        team is happy to speak in greater detail about this plan if desired.
+    </p>
+    <div>{% block gantt %}{% endblock %}</div>
+    <div class="break"></div>
+    <h1>Project Plan Rough Detail for {{ plans.0.project_name }}</h1>
+    <p class="body">
+        The plan detail below makes assumptions about available resources for both Energy Exemplar and 
+        {{ plans.0.group.company.name }}. The plan may assume that multiple resources are available to
+        support each of these tasks, or that individuals may be available full time for the implementation.
+        When you share with us the availablility of {{ plans.0.group.company.name }} staff, Energy Exemplar
+        can revise this project plan to get a more accurate view of the project timelines. The project is 
+        broken up into phases with subtasks listed. The first three digits of the Task ID indicate the
+        phase number and following digits indicate the subtask number. Budgetary values associated with
+        the phase-level task (if any) indicate project management services for that phase from Energy 
+        Exemplar, which are generally required if Energy Exemplar owns that phase of the project.
+    </p>
+    {% block detail %}{% endblock %}
+</body>

@@ -57,7 +57,7 @@ class GoLiveInline(admin.TabularInline):
 
 class ImplementationPlanAdmin(admin.ModelAdmin):
     ordering = ['-modified_at']
-    list_display = ['project_name', 'show_account_link', 'show_plan_link', 'show_gantt_link', 'download_gantt_link', ]
+    list_display = ['project_name', 'project_cost', 'ee_effort', 'show_account_link', 'show_plan_link', 'show_gantt_link', 'download_gantt_link', ]
     list_filter = ['group__company__name', ]
     exclude = ['created_by', 'created_at', 'modified_by', 'modified_at', ]
     inlines = [DeploymentInline, ProductTrainingInline, DetailedPlanningInline, ModelBuildingInline, CustomizationInline, \
@@ -91,6 +91,16 @@ class CommercialDatasetsAdmin(admin.ModelAdmin):
     list_display = ['name', 'is_nodal', ]
     exclude = ['created_by', 'created_at', 'modified_by', 'modified_at', ]
 
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ['get_project_name', 'outline', 'name', 'start_date', 'end_date', 'cost', ]
+    exclude = ['created_by', 'created_at', 'modified_by', 'modified_at', ]
+    list_filter = ['implan__project_name', 'implan__group__company__name', 'modified_by', 'created_by']
+    ordering = ['-implan__modified_at', 'outline']
+    list_display_links = ['outline']
+    list_editable = ['name', 'start_date', 'end_date', 'cost']
+    def get_project_name(self, obj): return obj.implan.project_name
+    get_project_name.short_description = 'Project Name'
+
 # Register your models here.
 admin.site.register(ImplementationPlan, ImplementationPlanAdmin)
 admin.site.register(Group, GroupAdmin)
@@ -99,3 +109,4 @@ admin.site.register(UseCase, UseCaseAdmin)
 admin.site.register(UniqueBusinessValueDriver, UniqueBusinessValueDriverAdmin)
 admin.site.register(TechnicalDifferentiators, TechnicalDifferentiatorsAdmin)
 admin.site.register(CommercialDatasets, CommercialDatasetsAdmin)
+admin.site.register(Task, TaskAdmin)

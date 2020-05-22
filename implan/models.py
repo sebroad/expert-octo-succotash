@@ -49,18 +49,18 @@ class PhaseModel(AuditedModel):
 
         # initial computations
         # who is the lead
-        lead = 'Energy Exemplar' if self.ee_fte > self.user_fte or is_ee else self.implan.group.company.name
+        lead = 'Energy Exemplar' if self.ee_fte > self.user_fte and is_ee else self.implan.group.company.name
         
         # what is the total efficiency of all fte
-        eff = self.ee_multipler if is_ee else ((self.ee_multipler*self.ee_fte + self.user_fte)/(self.ee_fte+self.user_fte))
+        eff = ((self.ee_multipler*self.ee_fte + self.user_fte)/(self.ee_fte+self.user_fte)) if is_ee else 1
 
         # what is the total number of all fte
-        fte = (1 if self.ee_fte == 0 else self.ee_fte) if is_ee else (self.ee_fte + self.user_fte)
+        fte = (self.ee_fte + self.user_fte) if is_ee else (1 if self.user_fte == 0 else self.user_fte)
 
         # which resources are available
         res = dict()
-        if is_ee or self.ee_fte > 0: res['1'] = 'Energy Exemplar'
-        if self.user_fte > 0 and not is_ee: res['0'] = self.implan.group.company.name
+        if is_ee and self.ee_fte > 0: res['1'] = 'Energy Exemplar'
+        if self.user_fte > 0 or not is_ee: res['0'] = self.implan.group.company.name
 
         # compute task duration and available fte loading rate
         if duration is None:
@@ -74,7 +74,10 @@ class PhaseModel(AuditedModel):
         t.order = order
         t.name = title
         t.start_date = start_date
-        t.cost = duration * 8 * loading * self.ee_rate * self.ee_fte
+        t.cost = duration * 8 * loading * self.ee_rate * (self.ee_fte if is_ee else 0)
+        t.ee_hours = duration * 8 * loading * (self.ee_fte if is_ee else 0)
+        t.company_hours = duration * 8 * loading * self.user_fte
+
         t.end_date = calculate_dates(start_date, duration)
         t.duration = duration
         t.coord = lead
@@ -123,7 +126,7 @@ class AuditingMiddleWare:
 
         return response
     
-class Task(models.Model):
+class Task(AuditedModel):
     implan = models.ForeignKey('ImplementationPlan', default=None, on_delete=models.CASCADE)
     order = models.IntegerField(default=1)
     name = models.CharField(max_length=100, default='Test')
@@ -131,6 +134,8 @@ class Task(models.Model):
     end_date = models.DateField(default=timezone.now)
     duration = models.IntegerField(default=1)
     completion = models.IntegerField(default=0)
+    ee_hours = models.FloatField(default=0)
+    company_hours = models.FloatField(default=0)
     cost = models.FloatField(default=0.0)
     coord = models.CharField(max_length=100, default='')
     pred = models.CharField(max_length=100, default='')
@@ -223,6 +228,8 @@ class Deployment(PhaseModel):
             t.end_date = max(start_date, y1, y2)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -269,6 +276,8 @@ class Customization(PhaseModel):
             t.end_date = start_date - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -375,6 +384,8 @@ class ModelBuilding(PhaseModel):
             t.end_date = start_date - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -435,6 +446,8 @@ class Automation(PhaseModel):
             t.end_date = start_date - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -481,6 +494,8 @@ class SystemIntegration(PhaseModel):
             t.end_date = start_date - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -526,37 +541,35 @@ class ProductTraining(PhaseModel):
         if self.xPert:
             if self.basic:
                 is_tasks = True
-                time = 10 * 60 * (2 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='xPert Basic Training')
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=10, suborder=suborder, title='xPert Basic Training')
 
             if self.advanced:
                 is_tasks = True
-                time = 10 * 60 * (2 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='xPert Advanced Training')
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=10, suborder=suborder, title='xPert Advanced Training')
         
         elif self.onsite:
 
             if self.basic:
                 is_tasks = True
-                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Onsite Basic Training', is_ee = True)
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1)
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=duration, suborder=suborder, title='Onsite Basic Training', is_ee = True)
 
-            if self.advance:
+            if self.advanced:
                 is_tasks = True
-                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Onsite Advanced Training', is_ee = True)
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1)
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=duration, suborder=suborder, title='Onsite Advanced Training', is_ee = True)
 
         else:
 
             if self.basic:
                 is_tasks = True
-                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Webinar Basic Training', is_ee = True)
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1)
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=duration, suborder=suborder, title='Webinar Basic Training', is_ee = True)
 
-            if self.advance:
+            if self.advanced:
                 is_tasks = True
-                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1) / self.implan.company_FTE
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, time, suborder=suborder, title='Webinar Advanced Training', is_ee = True)
+                duration = 2 * (1.5 if self.new_modelers else 1) / (2 if self.recent else 1)
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=duration, suborder=suborder, title='Webinar Advanced Training', is_ee = True)
             
         if is_tasks: 
             t = Task()
@@ -568,6 +581,8 @@ class ProductTraining(PhaseModel):
             t.end_date = start_date - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -604,6 +619,8 @@ class HandoverWorkshop(PhaseModel):
         t.end_date = calculate_dates(start_date, self.days)
         t.duration = (t.end_date - t.start_date).days + 1
         t.cost = (t.duration * 8 * self.ee_rate) if self.is_ee() else 0.0
+        t.company_hours = 0 if self.is_ee() else (t.duration * 8)
+        t.ee_hours = 0 if not self.is_ee() else (t.duration * 8)
         t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
         t.pred = init['pred']
         t.outline = '{:03}'.format(phase)
@@ -667,6 +684,8 @@ class DetailedPlanningPhase(PhaseModel):
             t.end_date = start_date - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -713,13 +732,11 @@ class Validation(PhaseModel):
         # updates
         if self.test > 0:
             is_tasks = True
-            time = 8 * 60 * self.test / self.implan.ee_FTE
             order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.test, suborder=suborder, title='Model Testing', is_ee=True)
 
         # updates
         if self.integ > 0:
             is_tasks = True
-            time = 8 * 60 * self.integ / self.implan.ee_FTE
             order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=self.integ, suborder=suborder, title='Integration Testing', is_ee=True)
 
         if is_tasks: 
@@ -732,6 +749,8 @@ class Validation(PhaseModel):
             t.end_date = start_date - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
+            t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
+            t.ee_hours = 0 if not self.is_ee() else (t.duration * 8 * 0.05)
             t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
             t.pred = init['pred']
             t.outline = '{:03}'.format(phase)
@@ -767,6 +786,8 @@ class GoLive(PhaseModel):
         t.end_date = calculate_dates(start_date, self.days)
         t.duration = (t.end_date - t.start_date).days + 1
         t.cost = (t.duration * 8 * self.ee_rate) if self.is_ee() else 0.0
+        t.company_hours = 0 if self.is_ee() else (t.duration * 8)
+        t.ee_hours = 0 if not self.is_ee() else (t.duration * 8)
         t.coord = 'Energy Exemplar' if self.is_ee() else self.implan.group.company.name
         t.pred = init['pred']
         t.outline = '{:03}'.format(phase)
@@ -811,12 +832,19 @@ class ImplementationPlan(AuditedModel):
     group = models.ForeignKey(Group, verbose_name='Department / Group', on_delete=models.CASCADE, default=0)
     usecase = models.ManyToManyField(UseCase, verbose_name='Use Cases')
     integration = models.TextField(verbose_name='System Integration Strategy')
-    company_FTE = models.FloatField(verbose_name='Department Employee Resources', default=0.5)
-    ee_FTE = models.FloatField(verbose_name='Energy Exemplar Resources', default=0.0)
-    cons_FTE = models.FloatField(verbose_name='Consultant Resources', default=0.0)
+    lock_tasks = models.BooleanField(verbose_name="Lock Tasks (Don't recompute on save)", default=False)
+    ee_effort = models.FloatField(verbose_name='Total EE Effort (hours)', default=0, editable=False)
+    company_effort = models.FloatField(verbose_name='Total Company Effort (hours)', default=0, editable=False)
+    project_cost = models.FloatField(verbose_name='Energy Exemplar Project Cost', default=0, editable=False)
+
     def __str__(self): return '{} -- {} {}'.format(self.project_name, self.group.company.name, self.group.name)
     def clear_tasks(self):
         Task.objects.filter(implan__id=self.id).delete()
+
+    def update_summary(self):
+        self.project_cost = Task.objects.filter(implan__id=self.id).aggregate(models.Sum('cost'))['cost__sum']
+        self.ee_effort = Task.objects.filter(implan__id=self.id).aggregate(models.Sum('ee_hours'))['ee_hours__sum']
+        self.company_effort = Task.objects.filter(implan__id=self.id).aggregate(models.Sum('company_hours'))['company_hours__sum']
 
     def compute_tasks(self):
         # deployment
@@ -882,15 +910,18 @@ def add_task_objects(request, sender, instance=None, **kwargs):
     create task objects related to a saved ImplementationPlan
     """
     if issubclass(sender, ImplementationPlan):
-        instance.clear_tasks()
-        instance.compute_tasks()
+        if not instance.lock_tasks:
+            instance.clear_tasks()
+            instance.compute_tasks()
+
+        instance.update_summary()
 
 class TaskMiddleWare:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        signals.post_save.connect(partial(add_task_objects, request), dispatch_uid=(self.__class__, request), weak=False)
+        signals.pre_save.connect(partial(add_task_objects, request), dispatch_uid=(self.__class__, request), weak=False)
         try:
             response = self.get_response(request)
         finally:
