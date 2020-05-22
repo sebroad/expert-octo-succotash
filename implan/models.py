@@ -225,7 +225,7 @@ class Deployment(PhaseModel):
             order += 1
             t.name = 'Deployment'
             t.start_date = init['start_date']
-            t.end_date = max(start_date, y1, y2)
+            t.end_date = max(start_date, y1, y2) - timedelta(1)
             t.duration = (t.end_date - t.start_date).days + 1
             t.cost = (t.duration * 8 * 0.05 * self.ee_rate) if self.is_ee() else 0.0
             t.company_hours = 0 if self.is_ee() else (t.duration * 8 * 0.05)
