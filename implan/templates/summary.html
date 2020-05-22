@@ -1,35 +1,31 @@
-<head>
-    <!-- Plotly.js -->
+{% extends "summary_report.html" %}
+{% load humanize %}
+{% block dependencies %}    <!-- Plotly.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-</head>
-{% load humanize %}
-<body>
-{% for plan in plans %}
+{% endblock %}
+
+{% block summary %}
 <table class="summary">
-<tr><td class="header">Project Name</td><td>{{ plan.project_name }}</td></tr>
-<tr><td class="header">Account</td><td>{{ plan.group.company.name }}</td></tr>
-<tr><td class="header">Group</td><td>{{ plan.group.name }}</td></tr>
-{% for use in plan.usecase.all %}
-<tr><td class="header">Use Case</td><td>{{ use.name }}</td></tr>
+<tr><td class="header">Project Name</td><td class="summary">{{ plans.0.project_name }}</td></tr>
+<tr><td class="header">Account</td><td class="summary">{{ plans.0.group.company.name }}</td></tr>
+<tr><td class="header">Group</td><td class="summary">{{ plans.0.group.name }}</td></tr>
+{% for use in plans.0.usecase.all %}
+<tr><td class="header">Use Case</td><td class="summary">{{ use.name }}</td></tr>
 {% endfor %}
-<tr><td class="header">Integration Plan</td><td>{{ plan.integration }}</td></tr>
-<tr><td class="header">Company Hours of Effort</td><td>{{ plan.company_effort }}</td></tr>
-<tr><td class="header">Energy Exemplar Hours of Effort</td><td>{{ plan.ee_effort }}</td></tr>
-<tr><td class="header">Energy Exemplar Project Cost</td><td>{{ plan.ee_cost }}</td></tr>
+<tr><td class="header">Company Hours of Effort</td><td class="summary">{{ plans.0.company_effort|floatformat:0|intcomma }}</td></tr>
+<tr><td class="header">Energy Exemplar Hours of Effort</td><td class="summary">{{ plans.0.ee_effort|floatformat:0|intcomma }}</td></tr>
+<tr><td class="header">Energy Exemplar Project Cost</td><td class="summary">${{ plans.0.project_cost|floatformat:0|intcomma }}</td></tr>
 </table>
-  
-<h1>Project Gantt Chart</h1>
-<!-- Plots go in blank <div> elements. 
-    You can size them in the plot layout,
-    or give the div a size as shown here.
--->
-<div id="tester" style="width:90%;height:500px;">
+{% endblock %}
+
+{% block gantt %}
+<div id="tester" class="gantt">
     <script>
         var data = {
-          "{{ plan.project_name }} Project Plan":{
+          "{{ plans.0.project_name }} Project Plan":{
             "color": "#337ab7",
-            "data":[{% for task in plan.get_tasks %}{% if forloop.counter != 1 %},{% endif %}
+            "data":[{% for task in plans.0.get_tasks %}{% if forloop.counter != 1 %},{% endif %}
                 {"start_date": "{{ task.start_date|date:"Y-m-d" }} 00:00","end_date": "{{ task.end_date|date:"Y-m-d" }} 23:59","name": "{{ task.name }}","color": "{{ task.color }}",}{% endfor %}
             ]
           }  
@@ -52,14 +48,14 @@
         
         var layout = {
             hovermode: !1, autosize: true,
-            title: '{{plan.project_name}} Project Plan', titlefont: { size: 24 },
+            title: '{{plans.0.project_name}} Project Plan', titlefont: { size: 24 },
             xaxis: {
-                title: '{{ plan.project_name }} Project Timeline',
+                title: '{{ plans.0.project_name }} Project Timeline',
                 titlefont: { size: 16 }, tickfont: { size: 12 },
                 showgrid: true, zerolinecolor: '#969696', zerolinewidth: 1,
             },
             yaxis: {
-                title: '{{ plan.project_name }} Project Tasks',
+                title: '{{ plans.0.project_name }} Project Tasks',
                 titlefont: { size: 16 }, tickfont: { size: 12 },
                 showgrid: true, zerolinecolor: '#969696', zerolinewidth: 1, autorange: "reversed",
             },
@@ -70,13 +66,31 @@
         Plotly.newPlot($('#tester').get(0), traces, layout);
     </script>
 </div>
+{% endblock %}
 
-<h1>Project Schedule</h1>
+{% block detail %}
 <table class="task">
-    <tr><td class="header">Task ID</td><td class="header">Task Name</td><td class="header">Start</td><td class="header">End</td><td class="header">Cost</td><td class="header">Assigned</td></tr>
-{% for task in plan.get_tasks %}
-    <tr><td>{{ task.outline }}</td><td>{{ task.name }}</td><td>{{ task.start_date }}</td><td>{{ task.end_date }}</td><td style="text-align:right">${{ task.cost|floatformat:0|intcomma }}</td><td>{{ task.res }}</td></tr>
+    <thead>
+        <th>Task ID</th>
+        <th>Task Name</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Cost</th>
+        <th>EE Hours</th>
+        <th>{{ plans.0.group.company.name}} Hours</th>
+        <th>Assigned</th>
+    </thead>
+{% for task in plans.0.get_tasks %}
+    <tr>
+        <td class="detail">{{ task.outline }}</td>
+        <td class="detail">{{ task.name }}</td>
+        <td class="detail">{{ task.start_date|date }}</td>
+        <td class="detail">{{ task.end_date|date }}</td>
+        <td class="numberdetail">${{ task.cost|floatformat:0|intcomma }}</td>
+        <td class="numberdetail">{{ task.ee_hours|floatformat:0|intcomma }}</td>
+        <td class="numberdetail">{{ task.company_hours|floatformat:0|intcomma }}</td>
+        <td class="detail">{{ task.res }}</td>
+    </tr>
 {% endfor %}
 </table>
-{% endfor %}
-</body>
+{% endblock %}
