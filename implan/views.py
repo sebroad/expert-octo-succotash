@@ -10,11 +10,13 @@ from .models import *
 @login_required
 def summary(request, planid):
     c = dict(plans=ImplementationPlan.objects.filter(id = planid))
+    for plan in c['plans']: plan.recompute_plan()
     t = loader.get_template("summary.html")
     return HttpResponse(t.render(c))	
 
 @login_required
 def gantt(request, planid):
     c = dict(plans=ImplementationPlan.objects.filter(id = planid))
+    for plan in c['plans']: plan.recompute_plan()
     t = loader.get_template("gantt.csv")
     return HttpResponse(t.render(c), content_type='text/plain')

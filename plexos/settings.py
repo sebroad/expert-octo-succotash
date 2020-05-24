@@ -54,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'implan.models.AuditingMiddleWare',
-    'implan.models.TaskMiddleWare',
 ]
 
 ROOT_URLCONF = 'plexos.urls'

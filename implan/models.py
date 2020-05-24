@@ -832,19 +832,28 @@ class ImplementationPlan(AuditedModel):
     group = models.ForeignKey(Group, verbose_name='Department / Group', on_delete=models.CASCADE, default=0)
     usecase = models.ManyToManyField(UseCase, verbose_name='Use Cases')
     integration = models.TextField(verbose_name='System Integration Strategy')
-    lock_tasks = models.BooleanField(verbose_name="Lock Tasks (Don't recompute on save)", default=False)
+    lock_tasks = models.BooleanField(verbose_name="Lock Tasks (Don't recompute on view)", default=False)
     ee_effort = models.FloatField(verbose_name='Total EE Effort (hours)', default=0, editable=False)
     company_effort = models.FloatField(verbose_name='Total Company Effort (hours)', default=0, editable=False)
     project_cost = models.FloatField(verbose_name='Energy Exemplar Project Cost', default=0, editable=False)
 
     def __str__(self): return '{} -- {} {}'.format(self.project_name, self.group.company.name, self.group.name)
+
+    def recompute_plan(self):
+        if not self.lock_tasks:
+            self.clear_tasks()
+            self.compute_tasks()
+            self.update_effort()
+
     def clear_tasks(self):
         Task.objects.filter(implan__id=self.id).delete()
 
-    def update_summary(self):
-        self.project_cost = Task.objects.filter(implan__id=self.id).aggregate(models.Sum('cost'))['cost__sum']
-        self.ee_effort = Task.objects.filter(implan__id=self.id).aggregate(models.Sum('ee_hours'))['ee_hours__sum']
-        self.company_effort = Task.objects.filter(implan__id=self.id).aggregate(models.Sum('company_hours'))['company_hours__sum']
+    def update_effort(self):
+        none_to_def = lambda x, v: v if x is None else x 
+        self.project_cost = none_to_def(Task.objects.filter(implan__id=self.id).aggregate(models.Sum('cost'))['cost__sum'], 0)
+        self.ee_effort = none_to_def(Task.objects.filter(implan__id=self.id).aggregate(models.Sum('ee_hours'))['ee_hours__sum'], 0)
+        self.company_effort = none_to_def(Task.objects.filter(implan__id=self.id).aggregate(models.Sum('company_hours'))['company_hours__sum'], 0)
+        self.save()
 
     def compute_tasks(self):
         # deployment
@@ -905,27 +914,3 @@ class ImplementationPlan(AuditedModel):
         test = json.dumps(jobj)
         return test
 
-def add_task_objects(request, sender, instance=None, **kwargs):
-    """
-    create task objects related to a saved ImplementationPlan
-    """
-    if issubclass(sender, ImplementationPlan):
-        if not instance.lock_tasks:
-            instance.clear_tasks()
-            instance.compute_tasks()
-
-        instance.update_summary()
-
-class TaskMiddleWare:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        signals.pre_save.connect(partial(add_task_objects, request), dispatch_uid=(self.__class__, request), weak=False)
-        try:
-            response = self.get_response(request)
-        finally:
-            signals.pre_save.disconnect(dispatch_uid=(self.__class__, request))
-
-        return response
-    
