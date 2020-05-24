@@ -83,8 +83,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'plexos_web',
-        'USER': 'plexos_user',
-        'PASSWORD': 'plexos01',
+        'USER': os.environ.get('DJANGO_MYSQL_USER','plexos_user'),
+        'PASSWORD': os.environ.get('DJANGO_MYSQL_PASSWORD','plexos01'),
         'HOST': 'localhost',
         'PORT': '3306',
     }
