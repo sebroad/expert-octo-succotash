@@ -73,4 +73,4 @@ for line in fileinput.input():
     if re.match(r"AUTOINCREMENT", line):
         line = re.sub("AUTOINCREMENT", "AUTO_INCREMENT", line)
 
-    print(line, end='')
+    print line,
