@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import re
+import re, sys
 import fileinput
 
 def this_line_is_useless(line):
@@ -19,7 +19,7 @@ def has_primary_key(line):
     return bool(re.search(r'PRIMARY KEY', line))
 
 searching_for_end = False
-for line in fileinput.input():
+for line in open(sys.argv[1]):
     if this_line_is_useless(line):
         continue
 
@@ -66,10 +66,10 @@ for line in fileinput.input():
     if searching_for_end and re.match(r'.*\);', line):
         searching_for_end = False
 
-    if re.match(r"CREATE INDEX", line):
+    if re.search(r"CREATE INDEX", line):
         line = re.sub('"', '`', line)
 
-    if re.match(r"AUTOINCREMENT", line):
+    if re.search(r"AUTOINCREMENT", line):
         line = re.sub("AUTOINCREMENT", "AUTO_INCREMENT", line)
 
     print(line, end='')
