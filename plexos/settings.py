@@ -41,8 +41,6 @@ INSTALLED_APPS = [
     'timecards',
     'leaverequest',
     'implan',
-    #'productselection',
-    #'mod_wsgi.server',
 ]
 
 MIDDLEWARE = [
@@ -83,12 +81,12 @@ WSGI_APPLICATION = 'plexos.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': os.environ.get('DJANGO_DB_ENGINE','django.db.backends.sqlite3'),
         'NAME': os.environ.get('DJANGO_DATABASE','plexos_web.db'),
-	#'USER': 'plexos_user',
-	#'PASSWORD': 'plexos01',
-	#'HOST': 'localhost',
-	#'PORT': '3306',
+        'USER': os.environ.get('DJANGO_DB_USER',''),
+        'PASSWORD': os.environ.get('DJANGO_DB_PWD',''),
+        'HOST': os.environ.get('DJANGO_DB_HOST',''), # localhost for MySQL
+        'PORT': os.environ.get('DJANGO_DB_PORT',''), # 3306 for MySQL
     }
 }
 
