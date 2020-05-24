@@ -79,17 +79,14 @@ WSGI_APPLICATION = 'plexos.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('DJANGO_DB_ENGINE','django.db.backends.sqlite3'),
-        'NAME': os.environ.get('DJANGO_DATABASE','plexos_web.db'),
-        'USER': os.environ.get('DJANGO_DB_USER',''),
-        'PASSWORD': os.environ.get('DJANGO_DB_PWD',''),
-        'HOST': os.environ.get('DJANGO_DB_HOST',''), # localhost for MySQL
-        'PORT': os.environ.get('DJANGO_DB_PORT',''), # 3306 for MySQL
-    }
-}
-
+DATABASES = { 'default': {} }
+DATABASES['default']['ENGINE'] = os.environ.get('DJANGO_DB_ENGINE','django.db.backends.sqlite3')
+DATABASES['default']['NAME'] = os.environ.get('DJANGO_DATABASE','plexos_web.db')
+DATABASES['default']['USER'] = os.environ.get('DJANGO_DB_USER','')
+DATABASES['default']['PASSWORD'] = os.environ.get('DJANGO_DB_PWD','')
+DATABASES['default']['HOST'] = os.environ.get('DJANGO_DB_HOST','') # localhost for MySQL
+DATABASES['default']['PORT'] = os.environ.get('DJANGO_DB_PORT','') # 3306 for MySQL
+print(DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
