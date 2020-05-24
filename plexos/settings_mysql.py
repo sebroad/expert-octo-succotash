@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'pd4whrszb4mh!b@720l$2^)6oz%uo9=(75c0r40bbqw#&mhkpm')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG',True)
+DEBUG = os.environ.get('DJANGO_DEBUG',False)
 
 ALLOWED_HOSTS = ['172.20.0.65','localhost','127.0.0.1']
 
@@ -83,10 +83,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'plexos_web',
-	'USER': 'plexos_user',
-	'PASSWORD': 'plexos01',
-	'HOST': 'localhost',
-	'PORT': '3306',
+        'USER': 'plexos_user',
+        'PASSWORD': 'plexos01',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
