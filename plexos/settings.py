@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'plexos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'plexos_web.db',
+        'NAME': os.environ.get('DJANGO_DATABASE','plexos_web.db'),
 	#'USER': 'plexos_user',
 	#'PASSWORD': 'plexos01',
 	#'HOST': 'localhost',
