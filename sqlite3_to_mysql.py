@@ -31,13 +31,12 @@ for line in fileinput.input():
     if re.match(r'^CREATE TABLE.*', line):
         searching_for_end = True
 
-    m = re.search('CREATE TABLE ["'\`]?(\w*)["'\`]?(.*)', line)
+    m = re.search('CREATE TABLE ["\'`]?(\w*)["\'`]?(.*)', line)
     if m:
         name, sub = m.groups()
-        line = "DROP TABLE IF EXISTS {name};\nCREATE TABLE IF NOT EXISTS `{name}`{sub}\n".format(name, sub)
-        line = line % dict(name=name, sub=sub)
+        line = "DROP TABLE IF EXISTS {name};\nCREATE TABLE IF NOT EXISTS `{name}`{sub}\n".format(name=name, sub=sub)
     else:
-        m = re.search('INSERT INTO ["'\`](\w*)["'\`](.*)', line)
+        m = re.search('INSERT INTO ["\'`](\w*)["\'`](.*)', line)
         if m:
             line = 'INSERT INTO %s%s\n' % m.groups()
             line = line.replace('"', r'\"')
