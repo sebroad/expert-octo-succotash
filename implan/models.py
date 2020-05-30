@@ -158,7 +158,7 @@ class Task(AuditedModel):
         return hex(sum([c*(16**p) for c, p in zip(lighten,[4,2,0])])).replace('0x','#').upper()
 
 class Deployment(PhaseModel):
-    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
+    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=1)
     install = models.BooleanField(verbose_name='Installation and Licensing', default=False)
     volume = models.IntegerField(verbose_name='Number of Desktops', default=0)
     cw = models.BooleanField(verbose_name='Cloud Workspaces', default=False)
@@ -240,7 +240,7 @@ class Deployment(PhaseModel):
         return phase + 1, order, start_date, pred
 
 class Customization(PhaseModel):
-    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
+    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=1)
     screens = models.IntegerField(verbose_name='Number of Custom Screens', default=0)
     description = models.TextField(verbose_name='Description of custom screens', default='')
     def __str__(self): return '{} Customization {}'.format(self.implan.project_name, self.id)
@@ -295,7 +295,7 @@ class CommercialDatasets(AuditedModel):
     def __str__(self): return self.name
 
 class ModelBuilding(PhaseModel):
-    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
+    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length=100, verbose_name='Name of Dataset', default='', blank=True)
     data = models.ForeignKey('CommercialDatasets', on_delete=models.CASCADE, verbose_name = 'Commercial Datasets', blank = True, null = True)
     carveouts = models.IntegerField(verbose_name='# of Carveouts', default = 0)
@@ -397,7 +397,7 @@ class ModelBuilding(PhaseModel):
 
 
 class Automation(PhaseModel):
-    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
+    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length=100, verbose_name='Automation Task', default='')
     inputs = models.IntegerField(verbose_name='Number of Inputs', default = 0)
     execute = models.IntegerField(verbose_name='Number of Executions', default = 0)
@@ -458,7 +458,7 @@ class Automation(PhaseModel):
         return phase + 1, order, start_date, pred
 
 class SystemIntegration(PhaseModel):
-    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
+    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=1)
     system_name = models.CharField(max_length=100, verbose_name='System Name', default = '')
     streams = models.IntegerField(verbose_name='Number of data streams', default = 1)
     method = models.CharField(max_length=100, verbose_name='Method of Integration (DB, API, Text)', default = '')
@@ -506,7 +506,7 @@ class SystemIntegration(PhaseModel):
         return phase + 1, order, start_date, pred
 
 class ProductTraining(PhaseModel):
-    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
+    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=1)
     desc = models.CharField(max_length=100, verbose_name='Description')
     urgent = models.BooleanField(verbose_name='Urgent Need', default=False)
     xPert = models.BooleanField(verbose_name='xPert only', default=False)
@@ -593,7 +593,7 @@ class ProductTraining(PhaseModel):
         return phase + 1, order, start_date, pred
 
 class HandoverWorkshop(PhaseModel):
-    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=0)
+    implan = models.ForeignKey('ImplementationPlan', on_delete=models.CASCADE, default=1)
     purpose = models.CharField(max_length=100)
     days = models.FloatField(default=0.0)
 
@@ -829,7 +829,7 @@ class Group(AuditedModel):
 class ImplementationPlan(AuditedModel):
     project_name = models.CharField(max_length=100, default='')
     project_start = models.DateField(default=timezone.now)
-    group = models.ForeignKey(Group, verbose_name='Department / Group', on_delete=models.CASCADE, default=0)
+    group = models.ForeignKey(Group, verbose_name='Department / Group', on_delete=models.CASCADE, default=1)
     usecase = models.ManyToManyField(UseCase, verbose_name='Use Cases')
     integration = models.TextField(verbose_name='System Integration Strategy')
     lock_tasks = models.BooleanField(verbose_name="Lock Tasks (Don't recompute on view)", default=False)
