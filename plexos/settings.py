@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'pd4whrszb4mh!b@720l$2^)6oz%uo9
 DEBUG = bool(os.environ.get('DJANGO_DEBUG','False'))
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1']
-ALLOWED_HOSTS += [h.strip(' ') for h in os.environ.get('DJANGO_HOSTS').split(',')]
+ALLOWED_HOSTS += [h.strip(' ') for h in os.environ.get('DJANGO_HOSTS', '').split(',')]
 
 # Application definition
 
@@ -92,7 +92,7 @@ DATABASES['default']['USER'] = os.environ.get('DJANGO_DB_USER','')
 DATABASES['default']['PASSWORD'] = os.environ.get('DJANGO_DB_PWD','')
 DATABASES['default']['HOST'] = os.environ.get('DJANGO_DB_HOST','') # localhost for MySQL
 DATABASES['default']['PORT'] = os.environ.get('DJANGO_DB_PORT','') # 3306 for MySQL
-if print(DATABASES)
+if os.environ.get('DJANGO_DEBUG', 'False'): print(DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
