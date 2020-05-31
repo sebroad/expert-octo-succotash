@@ -31,7 +31,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'pd4whrszb4mh!b@720l$2^)6oz%uo9
 DEBUG = bool(os.environ.get('DJANGO_DEBUG','False'))
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1']
-ALLOWED_HOSTS += [h.strip(' ') for h in os.environ.get('DJANGO_HOSTS', '').split(',')]
+if len(os.environ.get('DJANGO_HOSTS','')) > 0:
+    ALLOWED_HOSTS += [h.strip(' ') for h in os.environ.get('DJANGO_HOSTS', '').split(',')]
 
 # Application definition
 
