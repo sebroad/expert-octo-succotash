@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if os.path.exists('/etc/environment'):
     with open('/etc/environment') as fenv:
         for line in fenv:
-            os.environ.setdefault(line.split('=')[0], '='.join(line.split('=')[1:]))
+            os.environ.setdefault(line.split('=')[0], '='.join(line.split('=')[1:]).rstrip())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
