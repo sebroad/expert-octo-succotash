@@ -15,6 +15,11 @@ import os, venv
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Grab environment variables from /etc/environment
+if os.path.exists('/etc/environment'):
+    with open('/etc/environment') as fenv:
+        for line in fenv:
+            os.environ.setdefault(line.split('=')[0], '='.join(line.split('=')[1:]))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -86,7 +91,7 @@ DATABASES['default']['USER'] = os.environ.get('DJANGO_DB_USER','')
 DATABASES['default']['PASSWORD'] = os.environ.get('DJANGO_DB_PWD','')
 DATABASES['default']['HOST'] = os.environ.get('DJANGO_DB_HOST','') # localhost for MySQL
 DATABASES['default']['PORT'] = os.environ.get('DJANGO_DB_PORT','') # 3306 for MySQL
-print(DATABASES)
+if print(DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

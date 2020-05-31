@@ -122,3 +122,5 @@ envvars
 plexos_web.db.old
 implan/templates/gantt.html
 plexos_web.db-journal
+environment.txt
+deployment.txt
