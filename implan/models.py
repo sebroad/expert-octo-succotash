@@ -541,11 +541,11 @@ class ProductTraining(PhaseModel):
         if self.xPert:
             if self.basic:
                 is_tasks = True
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=10, suborder=suborder, title='xPert Basic Training')
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=1.25, suborder=suborder, title='xPert Basic Training')
 
             if self.advanced:
                 is_tasks = True
-                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=10, suborder=suborder, title='xPert Advanced Training')
+                order, start_date, pred, suborder = self.generate_task(phase, order, start_date, pred, duration=1.25, suborder=suborder, title='xPert Advanced Training')
         
         elif self.onsite:
 
