@@ -14,7 +14,7 @@
 <table class="detail">
 <tr>
 <td class="detail">Date</td>
-{% for k, v in pivot.0.iteritems %}
+{% for k in pivot.0 %}
 {% if k != 'date_of_work' %}
 <td class="detail">
 {% if year %}
@@ -35,7 +35,7 @@
 {% if k == "date_of_work" %}
 {% else %}
 <td class="detail">
-{{ day|keyvalue:k }}
+{{ day|keyvalue:k|floatformat:2 }}
 </td>
 {% endif %}
 {% endfor %}

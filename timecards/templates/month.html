@@ -20,7 +20,7 @@
 		<a href="/timecards/resource/{{ res.timesheet__resource__username__username }}/{{ year }}/{{ month }}">{{ res.timesheet__resource__full_name }}</a>
 	</td>
 	<td class="detail">
-		{{ res.hours__sum }}
+		{{ res.hours__sum|floatformat:2 }}
 	</td>
 <tr>
 {% endfor %}
@@ -43,7 +43,7 @@
 		<a href="/timecards/project/{{ proj.project__project_name }}/{{ year }}/{{ month }}">{{ proj.project__project_name }}</a>
 	</td>
 	<td class="detail">
-		{{ proj.hours__sum }}
+		{{ proj.hours__sum|floatformat:2 }}
 	</td>
 <tr>
 {% endfor %}
@@ -55,7 +55,7 @@
 <table class="detail">
 <tr>
 <td class="detail">Date</td>
-{% for k, v in daily.0.iteritems %}
+{% for k in daily.0 %}
 {% if k != 'date_of_work' %}
 <td class="detail">
 {{ k }}
@@ -65,13 +65,13 @@
 </tr>
 {% for day in daily %}
 <tr>
-{% for k, v in day.iteritems %}
+{% for k, v in day.items %}
 <td class="detail">
 {% if k == "date_of_work" %}
 {{ v|date:"M d" }}
 {% elif v == None %}
 {% else %}
-{{ v }}
+{{ v|floatformat:2 }}
 {% endif %}
 </td>
 {% endfor %}
